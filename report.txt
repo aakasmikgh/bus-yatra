@@ -1,0 +1,118 @@
+BUSYATRA: MID-DEFENSE PROGRESS REPORT
+==========================================
+Date: February 23, 2026
+Project: BusYatra – Unified Mobile Bus Ticketing & SEAT Recommendation System
+Status: Mid-Defense Milestone
+
+____________________________________________________________________________
+1. INTRODUCTION
+____________________________________________________________________________
+BusYatra is designed to address the fragmented nature of bus ticketing in Nepal. Currently, passengers must navigate multiple platforms such as Trip Turbo, Sajha Yatayat, and generic digital wallets, often facing real-time availability issues and a lack of personalized service. 
+
+Objectives Recap:
+- Provide an ACID-compliant mobile booking experience.
+- Implement ML-based (KNN) seat recommendations for user personalization.
+- Secure wallet-based transactions with transparent concurrency control.
+
+Scope:
+The system encompasses a cross-platform passenger mobile app, a comprehensive operator/admin web dashboard, and a scalable Node.js/Express backend. 
+
+____________________________________________________________________________
+2. PROGRESS OVERVIEW
+____________________________________________________________________________
+Current implementation status against proposed requirements:
+
+Module Status Table:
+----------------------------------------------------------------------------
+| Module                         | Status       | Notes                     |
+|--------------------------------|--------------|---------------------------|
+| Mobile App (User)              | Completed*   | Core flows implemented    |
+| Web Dashboard (Admin/Operator) | Completed*   | Analytics & Management live|
+| Backend Services (APIs)        | Completed    | 9+ core services active   |
+| ML Module (KNN Recommendation) | In Progress  | Dataset collection phase  |
+| ACID + Concurrency Control     | Completed    | Atomic seat reservation   |
+| Wallet transactions (2PC)      | Prototype    | External gateway integrated|
+| Documentation (Swagger)        | Completed    | API schema finalized      |
+----------------------------------------------------------------------------
+*Core functionality refers to Login, Search, Seat Selection, and Booking flows.
+
+____________________________________________________________________________
+3. METHODOLOGY AND IMPLEMENTATION STATUS
+____________________________________________________________________________
+3.1 Agile Methodology
+The project followed an Agile Scrum approach. We have completed 2 main sprints (Approx. 4 weeks of development):
+- Sprint 1: Foundation (Auth, DB Schema, Basic Routes) - DONE
+- Sprint 2: Core Flow (Seat Layout, Booking Engine, Payment Integration) - DONE
+- Sprint 3 (Ongoing): Personalization (ML Recommendation, Analytics Polish) - WIP
+
+3.2 Requirements Status
+Functional and Non-functional requirements are currently frozen. Minor adjustments were made to the payment verification flow to enhance reliability with eSewa V2 APIs.
+
+3.3 Algorithms Implementation Status
+- 3.3.1 Seat Booking Concurrency: Implemented via MongoDB atomic identifiers and validation logic in `bookingController.js`.
+- 3.3.2 ML-Based Seat Recommendation: Prototype phase. Data features (age, gender, history) are being collected via user profiles.
+- 3.3.3 Search Optimization: Implemented. MongoDB indexes applied to `route`, `departureTime`, and `fare`.
+
+3.4 Technology Stack (Current)
+- Mobile: React Native + Expo (v51/52)
+- Web: React + Vite + Tailwind CSS
+- Backend: Node.js (v20+) + Express
+- Database: MongoDB (Atlas)
+- Documentation: Swagger / OpenAPI 3.0
+
+____________________________________________________________________________
+4. SYSTEM DESIGN AND CURRENT ARTIFACTS
+____________________________________________________________________________
+- ER Diagram: Refined to 7 core collections (User, Bus, Route, Booking, Destination, Notification, Coupon).
+- API Documentation: Completed Swagger UI available at the `api-endpoints` server.
+- Sequence Diagrams: Updated for the eSewa/Stripe payment verification loop.
+
+____________________________________________________________________________
+5. IMPLEMENTATION DETAILS BY MODULE
+____________________________________________________________________________
+5.1 Mobile Application (User-Mobile)
+- Implemented Screens: Auth Stack, Dashboard, Bus Search, Seat Selection, Booking Summary, Checkout (eSewa/Stripe), My Trips.
+- Navigation: Dual approach using Expo Router (Tab + Stack navigation).
+
+5.2 Web Dashboard (Admin-Web)
+- Implemented Views: Real-time Analytics Dashboard, User Management, Bus/Route CRUD, Booking Logs, Payment Portal.
+- Features: Revenue tracking, route occupancy metrics, and automated admin notifications.
+
+5.3 Backend Services (Backend)
+- Architecture: RESTful API with Role-Based Access Control (RBAC).
+- Core Services: `authRoutes`, `busRoutes`, `bookingRoutes`, `paymentRoutes`, `analyticsRoutes`.
+
+____________________________________________________________________________
+6. TIMELINE AND PLAN
+____________________________________________________________________________
+- Requirements Finalized: Week 1 (Actual: Week 1) - On Track
+- DB & API Design: Week 2 (Actual: Week 2) - On Track
+- Core Module Dev: Week 3-5 (Actual: Week 3-4) - Ahead
+- ML Integration: Week 6-8 (Scheduled) - On Track
+
+____________________________________________________________________________
+7. CHALLENGES AND RISK MANAGEMENT
+____________________________________________________________________________
+- Technical Challenges: Navigating eSewa's signature verification for web/mobile redirects was resolved with a dedicated `paymentController` middleware.
+- Concurrency: Addressed "Double Booking" scenarios using MongoDB pre-save validation and availability checks.
+
+____________________________________________________________________________
+8. EXPECTED OUTCOMES
+____________________________________________________________________________
+By final defense, BusYatra will deliver:
+- A production-ready passenger app with full booking capabilities.
+- A functional ML-driven seat suggestion engine.
+- A professional operator dashboard for fleet management.
+
+____________________________________________________________________________
+9. CONCLUSION
+____________________________________________________________________________
+The project is approximately 75% complete. The core booking infrastructure is robust and tested. The final phase will focus on fine-tuning the recommendation model and stress-testing the concurrency mechanisms for high-volume scenarios.
+
+____________________________________________________________________________
+10. REFERENCES
+____________________________________________________________________________
+1. MongoDB Documentation - ACID Transactions.
+2. React Native Documentation - Navigation & Deep Linking.
+3. IEEE Standard for Software Progress Reports.
+4. eSewa/Stripe API Integration Guides.

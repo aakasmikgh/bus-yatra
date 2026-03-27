@@ -1,0 +1,233 @@
+BusYatra Progress Report: What to Include
+Guide for Mid-Defense Progress Report Structure
+Based on your BusYatra proposal and the sample progress report structure, here is what you should include in each section of your mid-defense progress report.
+________________________________________
+1. Introduction
+What to include: - Very brief recap of proposal context: background, problem definition, objectives, scope/limitations (1–2 paragraphs each, not as long as in the proposal itself) - Emphasize that this report focuses on progress within the 12-week timeline rather than re-justifying the project idea - Mention the submission date and authors
+Key points from proposal to reference: - Bus ticketing fragmentation across Trip Turbo, eSewa, Khalti, Sajha Yatayat, FlixBus - The problem: lack of unified, mobile-optimized, real-time seat availability and personalization - Three main objectives: ACID-compliant mobile booking, ML-based seat recommendations, wallet transactions with two-phase commit - Scope: passenger mobile app, operator dashboard, backend services, ML recommendation engine - Limitations: operator participation, geographic coverage, payment gateway integration, etc.
+Length: 1.5–2 pages (condensed from the full proposal)
+________________________________________
+2. Progress Overview (NEW SECTION)
+What to include: - A mapping of what was planned in the proposal to your current status - Break down requirements finalization and any changes: - Functional requirements: are they all finalized or did you discover/drop some? - Non-functional requirements: any changes to scalability, security, performance targets? - Feasibility study: confirm if technical, economic, and schedule assumptions held true
+•	Module-by-module status (use a table or bulleted list):
+–	Mobile App (search, seat layout, booking flow) → Not Started / In Progress / Completed
+–	Web Dashboard (operator/admin) → Not Started / In Progress / Completed
+–	Backend Services (auth, route, seat, booking, wallet APIs) → Not Started / In Progress / Completed
+–	ML Module (KNN recommendation) → Not Started / In Progress / Completed
+–	ACID + Optimistic Locking Implementation → Not Started / In Progress / Completed
+–	Two-Phase Commit for Wallet → Not Started / In Progress / Completed
+–	Testing and Documentation → Not Started / In Progress / Completed
+•	Mention any changes from the original objectives or scope
+•	Highlight what features/modules will be demo-able at final defense vs. which are prototypes or future work
+Length: 1–1.5 pages
+________________________________________
+3. Methodology and Implementation Status
+3.1 Agile Methodology (Updated)
+What to include: - Convert the proposal’s generic Agile explanation into what you actually did - Number of sprints/iterations completed so far (e.g., “Completed 4 out of 12 weeks; 2 sprints of 2-3 weeks each”) - What each sprint focused on: - Sprint 1: (e.g., auth, user registration, basic route search) - Sprint 2: (e.g., seat layout UI, booking flow design, database schema refinement) - Sprint 3: (e.g., wallet prototype, KNN baseline model, API integration) - (List any completed sprints)
+•	Tools used for agile tracking (Jira, Trello, GitHub Projects, etc.)
+•	Iteration cycle: sprint duration, daily standup frequency, review/retrospective format
+Length: 0.5–1 page
+3.2 Requirements Status
+What to include: - State that the functional and non-functional requirements from Section 3.2 of the proposal are now frozen - Highlight any newly discovered requirements during implementation - Call out any requirements that were deprioritized or dropped with justification - Link back to proposal section 3.2.1 and 3.2.2 (functional vs. non-functional)
+Length: 0.5 page
+3.3 Algorithms Implementation Status
+What to include: For each of the 5 algorithms from proposal Section 3.5, provide current status and 2–3 lines on code/design status:
+3.3.1 Seat Booking Concurrency Control (ACID + Optimistic Locking)
+•	Status: Implemented / Prototype / Planned
+•	Current design: briefly describe the locking mechanism, version fields in MongoDB, conflict detection logic
+•	Code location/commits: reference your GitHub repo or implementation files
+•	Testing status: how are you validating ACID properties?
+3.3.2 Seat Availability Management (Hash Set Difference)
+•	Status: Implemented / Prototype / Planned
+•	Current design: how are you representing available/booked seats? Set data structure usage?
+•	Performance metrics: any benchmarks for seat update speed?
+3.3.3 ML-Based Seat Recommendation (KNN Classification)
+•	Status: Implemented / Prototype / Planned
+•	Data features: what passenger attributes are you tracking (gender, age, travel history, seat preferences)?
+•	Dataset status: amount of synthetic/real data available for training
+•	Model performance: accuracy on test set, if applicable
+•	Integration: is the KNN service callable from mobile app?
+3.3.4 Search and Filter Optimization (Indexed Query)
+•	Status: Implemented / Prototype / Planned
+•	Indexes created: which MongoDB collections have indexes on route, date, price, departure time?
+•	Query performance: response time for typical searches?
+3.3.5 Wallet Transaction Management (Two-Phase Commit)
+•	Status: Implemented / Prototype / Planned
+•	Current design: transaction log structure, rollback mechanism, fault tolerance
+•	Integration with eSewa/Khalti: progress on payment gateway integration
+Length: 1–1.5 pages
+3.4 Technology Stack (Updated from Proposal)
+What to include: - Versions and tools currently in use (update from proposal Section 3.6): - Mobile: React Native version, Expo version, target OS versions (Android/iOS) - Web: React version, routing library, UI framework - Backend: Node.js version, Express version, middleware stack - Database: MongoDB version, local vs. cloud (MongoDB Atlas?), connection pooling - ML: scikit-learn version, Python version, environment (local vs. Colab) - Version control: GitHub, GitLab, or other; branching strategy - Project structure: brief overview of folder layout and module organization - Any tech stack changes from proposal and rationale (e.g., changed ORM, switched hosting, altered UI framework) - Development environment: IDEs, linters, formatters in use
+Length: 0.5–1 page
+________________________________________
+4. System Design and Current Artifacts
+What to include: - Reuse proposal’s “High Level Design of the System” (Block Diagram from Figure 3, Flow Chart from Figure 4) but note if/how it has changed - Add any new design artifacts created after proposal: - ER Diagram: logical and physical MongoDB schema (collections and relationships) - API Endpoints List: brief table with method, endpoint, status (planned/WIP/done) - Updated Sequence Diagrams: for booking flow, payment flow, seat recommendation flow - DFD Level 0 and Level 1: showing data flow through your system (inspired by sample progress report) - Entity-Relationship Model: for seat, route, booking, user, wallet entities - System Architecture Diagram: showing microservices/components, communication protocols
+•	For each figure/diagram, mention whether it is:
+–	Unchanged from proposal (reference proposal section 4)
+–	Refined based on implementation experience
+–	Newly created during this phase
+Length: 1.5–2 pages with diagrams
+________________________________________
+5. Implementation Details by Module
+What to include:
+5.1 Mobile Application (React Native + Expo)
+•	Screens Implemented:
+–	Authentication (login, signup, password reset) – completed / WIP
+–	Passenger Dashboard / Home – completed / WIP
+–	Route Search and Filters – completed / WIP
+–	Seat Layout Visualization – completed / WIP
+–	Booking Confirmation – completed / WIP
+–	Wallet Top-Up and History – completed / WIP
+–	Past Bookings and Cancellations – completed / WIP
+•	Navigation: stack vs. tab navigation structure
+•	Backend Integration: examples of API calls to auth, route, booking endpoints
+•	Offline Capabilities: what data is cached locally?
+•	UI/UX Considerations: responsive design for different screen sizes
+5.2 Web Dashboard (Operator/Admin)
+•	Operator Views: route management, schedule configuration, seat pricing, booking analytics
+•	Admin Views: user management, operator onboarding, dispute resolution, system reports
+•	Status: which views are ready, which are WIP
+•	Framework: React components, state management (Redux/Context), routing
+5.3 Backend Services (Express.js + MongoDB)
+•	Core Services/Routes Implemented:
+–	Authentication & Authorization (JWT, role-based access control)
+–	Route Management (CRUD for bus routes)
+–	Seat Management (real-time availability, booking, cancellation)
+–	Booking Service (booking creation with optimistic locking)
+–	Wallet Service (balance management, top-up, refund, transaction history)
+–	Recommendation Service (KNN endpoint)
+–	Search & Filter Service (indexed queries)
+•	Database: MongoDB collections schema for users, routes, seats, bookings, wallets, transactions
+•	API Documentation: link to Postman collection or OpenAPI spec
+•	Error Handling: how are concurrency conflicts, payment failures, and invalid states handled?
+•	Performance: any caching layers (Redis), rate limiting, request/response times
+5.4 ML Component (K-Nearest Neighbors)
+•	Data Features Collected:
+–	Passenger profile: age, gender, frequent routes, seating preferences
+–	Booking history: past seat selections, time of booking relative to departure
+–	Seat attributes: window/aisle, forward/rear, price tier
+•	Training Data:
+–	Amount of synthetic vs. real data
+–	Data split: training/validation/test proportions
+•	Model Performance:
+–	Accuracy, precision, recall on test set
+–	Inference time for a single recommendation
+•	Integration: how does the mobile app request recommendations? Response format?
+•	Deployment: is the model served as a Python API or embedded in Node.js?
+5.5 Database & Data Consistency
+•	Schema: current MongoDB collections and key fields
+•	ACID-like Behavior: how are multi-document transactions implemented?
+•	Optimistic Locking: version field strategy, conflict resolution logic
+•	Indexing: which fields are indexed for fast queries (route, date, departure_time, price)?
+•	Data Validation: schema validation at DB and application layer
+5.6 Testing
+•	Unit Tests: coverage % for critical modules (auth, booking, wallet, seat availability)
+•	Integration Tests: end-to-end booking flow test, payment flow test
+•	Manual Testing: browsers/devices tested on (Chrome, Safari, Android emulator, iOS simulator)
+•	Load Testing: any stress tests on concurrent seat bookings? Results?
+•	Test Results: pass/fail counts, critical bugs found and fixed, known issues
+Length: 2–3 pages
+________________________________________
+6. Timeline and Plan
+What to include:
+6.1 Original Plan (from Proposal)
+•	Restate the Gantt chart phases from proposal Figure 2
+•	Key milestones: Week 1-3 (design/setup), Week 4-8 (development), Week 9-12 (testing/polish)
+6.2 Actual Progress vs. Planned Milestones
+•	Create a comparison table: | Milestone | Planned Completion | Actual Completion | Status (On Track / Ahead / Delayed) | | — | — | — | — | | Requirements Finalized | Week 1 | Week 1 | On Track | | DB Schema & API Design | Week 2 | Week 2 | On Track | | Auth System | Week 3 | Week 3 | On Track | | Search & Route Module | Week 4 | Week 5 | Delayed 1 week | | … | … | … | … |
+•	Explanation of any delays: blockers encountered, dependencies, re-design iterations
+•	Acceleration or early wins: what completed ahead of schedule?
+6.3 Revised Plan Until Final Defense
+•	Updated Gantt chart or milestone list showing:
+–	Remaining weeks (if 4 weeks left until defense, weeks 9-12 tasks)
+–	What will be demo-ready by final defense
+–	What will be prototype/partially done
+–	What will be future work
+•	Risk mitigation: contingency plan if certain modules slip further
+Length: 1–1.5 pages
+________________________________________
+7. Challenges and Risk Management
+What to include:
+7.1 Technical Challenges Encountered
+•	Concurrency Edge Cases: how did you discover and resolve double-booking scenarios?
+•	Payment Gateway Integration: delays in eSewa/Khalti API access or documentation?
+•	Database Schema Redesign: did you need to reshape collections after initial design?
+•	Mobile Cross-Platform Issues: differences in Android vs. iOS behavior?
+•	ML Data Sparsity: was there enough booking data to train KNN reliably?
+•	Real-Time Updates: WebSocket or polling strategy; any latency issues?
+7.2 Project Management and Coordination Issues
+•	Team Communication: how are standups and decision-making happening?
+•	Dependency Misalignment: backend not ready when frontend team needed it?
+•	Scope Creep: any features added beyond proposal scope? What was deprioritized?
+7.3 External Constraints
+•	Operator Participation: were you able to get real bus operators to test?
+•	Third-Party Service Limits: rate limits on payment gateways, API restrictions?
+7.4 Risk Mitigation Strategies Implemented
+•	Concurrency Testing: regular testing of simultaneous bookings to catch conflicts early
+•	Feature Prioritization: created MVP (minimum viable product) list to ensure core booking flow works by defense
+•	Buffer Time: added slack to schedule for unknown unknowns
+•	Documentation: weekly architecture decisions documented to onboard new insights
+•	Automation: CI/CD pipeline to catch regressions early
+Length: 1–1.5 pages
+________________________________________
+8. Expected Outcomes (Updated)
+What to include:
+8.1 What Will Definitely Be Delivered by Final Defense
+•	Core mobile app with: login, route search, seat layout view, booking confirmation, wallet balance
+•	Working backend APIs for all core flows
+•	Database with ACID-like booking transactions
+•	Basic KNN recommendation prototype
+•	Operator dashboard showing route and booking analytics
+•	Live demo of end-to-end booking flow
+8.2 What Will Be Partial/Prototype Status
+•	ML recommendation accuracy (may not be perfectly tuned with limited data)
+•	Payment gateway integration (may be simulated or partially integrated with eSewa/Khalti)
+•	Admin panel (may have fewer reports than envisioned)
+•	Performance optimization (basic indexing done, but not fully tuned)
+8.3 Future Work / Post-Defense Improvements
+•	Real operator onboarding and live data integration
+•	Advanced ML features (collaborative filtering, deep learning)
+•	Mobile app offline mode enhancements
+•	Web app UI polish and accessibility improvements
+•	Load testing and horizontal scaling
+•	Comprehensive security audit and compliance
+•	Support for more payment methods
+8.4 Project Impact
+•	Summarize what you’ve learned about bus ticketing, ACID transactions, ML, and full-stack development
+•	Potential for real-world deployment or continued development
+Length: 1 page
+________________________________________
+9. Conclusion
+What to include: - Brief summary of current project state (X% complete, Y modules done, Z modules pending) - Team assessment: what’s working well, what could be improved for final push - Next immediate priorities (2-3 weeks ahead) - Gratitude to supervisors, peers, and any external partners (bus operators, payment providers)
+Length: 0.5 page
+________________________________________
+10. References
+What to include: - Same references from proposal (Section 5, References page) - Add any new references encountered during implementation: - Papers on ACID transactions, optimistic locking, KNN recommendation - Technology documentation (React Native, Express.js, MongoDB, scikit-learn) - Bus ticketing system studies or industry reports - Payment gateway integration guides (eSewa, Khalti) - Use IEEE or your institution’s standard citation format - Total references: likely 15–25 entries
+Length: 1 page
+________________________________________
+Appendices (Optional but Helpful)
+What to include: - Appendix A: Detailed API endpoint documentation (OpenAPI/Swagger specification) - Appendix B: MongoDB schema definitions (JSON/BSON examples) - Appendix C: Code snippets for critical algorithms (optimistic locking, KNN, two-phase commit) - Appendix D: Screenshots of working mobile app screens - Appendix E: Database performance metrics and query execution plans - Appendix F: Sprint retrospectives or team meeting notes - Appendix G: Supplementary diagrams (sequence diagrams, state diagrams)
+________________________________________
+Overall Page Count Estimate
+•	Introduction: 2 pages
+•	Progress Overview: 1.5 pages
+•	Methodology & Implementation Status: 3–4 pages
+•	System Design & Artifacts: 2 pages (with diagrams)
+•	Implementation Details by Module: 3 pages
+•	Timeline & Plan: 1.5 pages
+•	Challenges & Risk Management: 1.5 pages
+•	Expected Outcomes: 1 page
+•	Conclusion: 0.5 pages
+•	References: 1 page
+•	Appendices (if included): 2–3 pages
+Total: 18–23 pages (excluding cover page, abstract, ToC, list of figures/abbreviations)
+________________________________________
+Tips for Success
+1.	Use Concrete Examples: instead of “we implemented authentication,” say “we implemented JWT-based authentication with role-based access control; users log in with email and receive a token valid for 24 hours.”
+2.	Include Screenshots & Diagrams: visual proof that the system is working (app screens, block diagrams, database schema).
+3.	Quantify Progress: not “we made good progress on the backend,” but “3 out of 5 core services are complete: auth, route, and booking. Wallet and recommendation services are 50% done.”
+4.	Be Honest About Delays: mention challenges and what you learned; judges respect transparency and problem-solving more than pretending everything is perfect.
+5.	Link Proposal to Progress: repeatedly reference “as stated in Section 3.3.1 of the proposal, we implemented optimistic locking for seat booking by adding a version field…”
+6.	Focus on Demo-Readiness: emphasize what will be live and clickable at mid-defense vs. what is still WIP.
+________________________________________
+Good luck with your progress report! Feel free to adapt any of these sections based on your specific progress and institutional requirements.
