@@ -28,7 +28,7 @@ const ManageBanners = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
 
-    const API_URL = 'http://192.168.1.66:5001/api/banners';
+    const API_URL = 'https://bus-yatra-backend.vercel.app/api/banners';
     const token = localStorage.getItem('adminToken');
 
     const fetchBanners = async () => {
