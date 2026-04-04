@@ -1,14 +1,25 @@
 const Booking = require('../models/Booking');
 const Coupon = require('../models/Coupon');
 const Notification = require('../models/Notification');
-const SeatAvailability = require('../models/SeatAvailability');
+
+
+// Helper to normalize dates to YYYY-MM-DD
+const normalizeDate = (dateStr) => {
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        return d.toISOString().split('T')[0];
+    } catch (e) {
+        return dateStr;
+    }
+};
 
 // @desc    Get all booked seats for a route and date
 // @route   GET /api/bookings/booked-seats
 // @access  Public
 exports.getBookedSeats = async (req, res, next) => {
     try {
-        const { routeId, date } = req.query;
+        let { routeId, date } = req.query;
 
         if (!routeId || !date) {
             return res.status(400).json({
@@ -17,23 +28,29 @@ exports.getBookedSeats = async (req, res, next) => {
             });
         }
 
-        const bookings = await Booking.find({
+        const normalizedDate = normalizeDate(date);
+
+        // 1. Fetch ALL confirmed bookings for this route and date
+        const confirmedBookings = await Booking.find({
             route: routeId,
-            bookingDate: date,
+            bookingDate: normalizedDate,
             status: 'Confirmed'
         });
 
-        // Flatten all seats from all bookings into a single array
-        const bookedSeats = bookings.reduce((acc, booking) => {
-            return acc.concat(booking.seats.map(s => s.trim()));
+        // 2. Flatten all seats from all confirmed bookings
+        const actualBookedSeats = confirmedBookings.reduce((acc, booking) => {
+            return acc.concat(booking.seats.map(s => s.trim().toUpperCase()));
         }, []);
+
+        // No longer using SeatAvailability for concurrency control as requested.
+        // We calculate booked seats directly from the confirmed bookings.
 
         res.status(200).json({
             success: true,
-            data: bookedSeats
+            data: actualBookedSeats
         });
     } catch (error) {
-        console.error(error);
+        console.error('GetBookedSeats Error:', error);
         res.status(500).json({
             success: false,
             error: 'Server Error'
@@ -49,37 +66,34 @@ exports.createBooking = async (req, res, next) => {
         // Add user to req.body
         req.body.user = req.user.id;
 
-        const { route, bookingDate, seats } = req.body;
+        let { route, bookingDate, seats } = req.body;
         if (!route || !bookingDate || !seats || seats.length === 0) {
             return res.status(400).json({ success: false, error: 'Missing route, bookingDate, or seats' });
         }
 
-        // --- ATOMIC CONCURRENCY CONTROL ---
-        await SeatAvailability.updateOne(
-            { route, bookingDate },
-            { $setOnInsert: { route, bookingDate, bookedSeats: [] } },
-            { upsert: true }
-        );
+        // --- NORMALIZE INPUTS ---
+        bookingDate = normalizeDate(bookingDate);
+        seats = seats.map(s => s.trim().toUpperCase());
+        req.body.bookingDate = bookingDate;
+        req.body.seats = seats;
 
-        const lock = await SeatAvailability.findOneAndUpdate(
-            {
-                route,
-                bookingDate,
-                bookedSeats: { $nin: seats }
-            },
-            {
-                $push: { bookedSeats: { $each: seats } }
-            },
-            { new: true }
-        );
+        // --- SIMPLE AVAILABILITY CHECK ---
+        const existingBookings = await Booking.find({
+            route,
+            bookingDate,
+            status: 'Confirmed'
+        });
 
-        if (!lock) {
-            return res.status(409).json({
+        const allBookedSeats = existingBookings.reduce((acc, b) => acc.concat(b.seats), []);
+        const isAnySeatTaken = seats.some(seat => allBookedSeats.includes(seat));
+
+        if (isAnySeatTaken) {
+            return res.status(400).json({
                 success: false,
-                error: 'CONCURRENCY ERROR: One or more selected seats were just instantly booked by another user. Please select different seats.'
+                error: 'One or more selected seats are already booked. Please choose different seats.'
             });
         }
-        // --- END ATOMIC CONTROL ---
+        // --- END SIMPLE CHECK ---
 
         // If a promo code was used, track it to prevent double-redemption
         if (req.body.promoCode) {
@@ -90,23 +104,19 @@ exports.createBooking = async (req, res, next) => {
             });
 
             if (!coupon) {
-                await SeatAvailability.updateOne({ route, bookingDate }, { $pullAll: { bookedSeats: seats } });
                 return res.status(400).json({ success: false, error: 'Invalid or expired promo code' });
             }
 
             if (coupon.usedBy.some(id => id.toString() === req.user.id)) {
-                await SeatAvailability.updateOne({ route, bookingDate }, { $pullAll: { bookedSeats: seats } });
                 return res.status(400).json({ success: false, error: 'Promo code already redeemed' });
             }
-
-            // Note: We update the coupon usage AFTER successfully creating the booking
         }
 
         let booking;
         try {
             booking = await Booking.create(req.body);
         } catch (bookingError) {
-            await SeatAvailability.updateOne({ route, bookingDate }, { $pullAll: { bookedSeats: seats } });
+
             throw bookingError;
         }
         console.log('New booking created:', booking._id);
@@ -135,7 +145,7 @@ exports.createBooking = async (req, res, next) => {
             data: booking
         });
     } catch (error) {
-        console.error(error);
+        console.error('CreateBooking Error:', error);
         res.status(400).json({
             success: false,
             error: error.message
@@ -205,27 +215,21 @@ exports.updateBookingStatus = async (req, res, next) => {
 
         await booking.save();
 
-        if (status === 'Cancelled') {
-            const SeatAvailability = require('../models/SeatAvailability');
-            // Assuming booking.bookingDate exists, wait, it's travelDate in Booking? No, bookingDate.
-             await SeatAvailability.updateOne(
-                { route: booking.route, bookingDate: booking.bookingDate },
-                { $pullAll: { bookedSeats: booking.seats } }
-            );
-        }
+
 
         res.status(200).json({
             success: true,
             data: booking
         });
     } catch (error) {
-        console.error(error);
+        console.error('UpdateBookingStatus Error:', error);
         res.status(500).json({
             success: false,
             error: 'Server Error'
         });
     }
 };
+
 // @desc    Get all bookings (Admin)
 // @route   GET /api/bookings/admin
 // @access  Private/Admin
@@ -280,7 +284,7 @@ exports.deleteBooking = async (req, res, next) => {
             data: {}
         });
     } catch (error) {
-        console.error(error);
+        console.error('DeleteBooking Error:', error);
         res.status(500).json({
             success: false,
             error: 'Server Error'
@@ -298,14 +302,14 @@ exports.getSeatRecommendations = async (req, res, next) => {
             return res.status(400).json({ success: false, error: 'Please provide routeId and date' });
         }
 
-        const mongoose = require('mongoose');
-        const Booking = mongoose.model('Booking');
-        const User = mongoose.model('User');
+        const User = require('../models/User'); // Fixed model loading
         const currentUser = await User.findById(req.user.id);
         
         if (!currentUser) {
             return res.status(404).json({ success: false, error: 'User not found' });
         }
+
+        const normalizedDate = normalizeDate(date);
 
         // 1. Get ALL confirmed bookings for this route
         const historicalBookings = await Booking.find({ route: routeId, status: 'Confirmed' }).populate('user', 'age gender');
@@ -348,8 +352,8 @@ exports.getSeatRecommendations = async (req, res, next) => {
         let recommendedSeats = Object.keys(seatFrequency).sort((a, b) => seatFrequency[b] - seatFrequency[a]);
 
         // 4. Filter out currently booked seats
-        const currentBookings = await Booking.find({ route: routeId, bookingDate: date, status: 'Confirmed' });
-        const currentlyBookedSeats = currentBookings.reduce((acc, b) => acc.concat(b.seats), []);
+        const confirmedNow = await Booking.find({ route: routeId, bookingDate: normalizedDate, status: 'Confirmed' });
+        const currentlyBookedSeats = confirmedNow.reduce((acc, b) => acc.concat(b.seats), []);
 
         recommendedSeats = recommendedSeats.filter(seat => !currentlyBookedSeats.includes(seat));
 

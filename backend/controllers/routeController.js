@@ -191,6 +191,35 @@ exports.searchRoutes = async (req, res, next) => {
     }
 };
 
+// @desc    Get single route by ID
+// @route   GET /api/routes/:id
+// @access  Public
+exports.getRoute = async (req, res, next) => {
+    try {
+        const route = await Route.findById(req.params.id)
+            .populate('bus', 'name number type amenities seats images')
+            .populate('origin', 'name')
+            .populate('destination', 'name');
+
+        if (!route) {
+            return res.status(404).json({
+                success: false,
+                error: 'Route not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: route
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Server Error: ' + error.message
+        });
+    }
+};
+
 // @desc    Delete route
 // @route   DELETE /api/routes/:id
 // @access  Private/Admin

@@ -5,7 +5,8 @@ const {
     createRoute,
     updateRoute,
     deleteRoute,
-    searchRoutes
+    searchRoutes,
+    getRoute
 } = require('../controllers/routeController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
@@ -24,6 +25,7 @@ const router = express.Router();
  */
 router.get('/', getRoutes);
 router.get('/search', searchRoutes);
+router.get('/:id', getRoute);
 
 // Admin routes
 router.get('/admin', protect, authorize('admin'), getAdminRoutes);

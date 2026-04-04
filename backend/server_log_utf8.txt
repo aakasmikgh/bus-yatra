@@ -1,0 +1,1120 @@
+﻿
+> backend@1.0.0 dev
+> nodemon server.js
+
+[33m[nodemon] 3.1.11[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node server.js`[39m
+[dotenv@17.2.3] injecting env (15) from .env -- tip: ≡ƒöæ add access controls to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+node.exe : 
+C:\Users\Aspire Go 14\D
+esktop\ticketing\bus-ti
+cketing-system\backend\
+node_modules\router\ind
+ex.js:385
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (C:\Users\Aspi   
+ re...er\index.js:3    
+85:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+    throw new 
+TypeError('argument 
+handler is required')
+    ^
+
+TypeError: argument 
+handler is required
+    at Function.use 
+(C:\Users\Aspire Go 14\
+Desktop\ticketing\bus-t
+icketing-system\backend
+\node_modules\router\in
+dex.js:385:11)
+    at 
+Object.<anonymous> 
+(C:\Users\Aspire Go 14\
+Desktop\ticketing\bus-t
+icketing-system\backend
+\routes\bannerRoutes.js
+:17:8)
+    at Module._compile 
+(node:internal/modules/
+cjs/loader:1706:14)
+    at Object..js (node
+:internal/modules/cjs/l
+oader:1839:10)
+    at Module.load (nod
+e:internal/modules/cjs/
+loader:1441:32)
+    at Function._load (
+node:internal/modules/c
+js/loader:1263:12)
+    at TracingChannel.t
+raceSync (node:diagnost
+ics_channel:328:14)
+    at wrapModuleLoad (
+node:internal/modules/c
+js/loader:237:24)
+    at Module.require (
+node:internal/modules/c
+js/loader:1463:12)
+    at require (node:in
+ternal/modules/helpers:
+147:16)
+
+Node.js v22.21.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[dotenv@17.2.3] injecting env (15) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒôí add observability to secrets: https://dotenvx.com/ops
+MongoDB Connected: ac-4fupgp8-shard-00-00.poktw2r.mongodb.net
+Server running on port 5001
+Admin: Fetching all bookings...
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 156ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 208ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 134ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 202ms
+Found 25 bookings
+GET /api/bookings 304 - 854ms
+Admin: Fetching all bookings...
+GET /api/analytics 304 - 1309ms
+Found 25 bookings
+GET /api/bookings 304 - 412ms
+GET /api/analytics 304 - 1218ms
+GET /api/banners 200 - 243ms
+GET /api/banners 304 - 203ms
+GET /api/analytics 304 - 1098ms
+GET /api/analytics 304 - 738ms
+GET /api/banners 304 - 212ms
+GET /api/banners 304 - 202ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 197ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 226ms
+GET /api/destinations 304 - 61ms
+GET /api/coupons 304 - 65ms
+GET /api/banners/active 200 - 63ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 189ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 187ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 206ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 191ms
+POST /api/banners/upload 201 - 4230ms
+GET /api/banners 200 - 194ms
+PATCH /api/banners/69b40e651784a5f6cf94cf09/toggle-home 200 - 424ms
+GET /api/banners 200 - 193ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 121ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 184ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 125ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 131ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 216ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 240ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 212ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 224ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 111ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 218ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 221ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 133ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 223ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 220ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 133ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 183ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 210ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 124ms
+GET /api/banners/active 200 - 56ms
+GET /api/destinations 304 - 63ms
+GET /api/coupons 304 - 63ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 340ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 182ms
+GET /api/banners 304 - 182ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+GET /api/banners 304 - 197ms
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 203ms
+PATCH /api/banners/69b40e651784a5f6cf94cf09/toggle-home 200 - 426ms
+GET /api/banners 200 - 184ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 150ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 187ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 165ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 188ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 139ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 195ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 132ms
+GET /api/banners 304 - 133ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 162ms
+GET /api/banners 304 - 161ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 141ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 132ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 123ms
+GET /api/destinations 304 - 58ms
+GET /api/coupons 304 - 56ms
+GET /api/banners/active 200 - 56ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 112ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 173ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 122ms
+GET /api/banners 304 - 123ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 248ms
+GET /api/banners 304 - 247ms
+GET /api/destinations 304 - 61ms
+GET /api/banners/active 304 - 59ms
+GET /api/coupons 304 - 63ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 126ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 185ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 260ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 131ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 151ms
+GET /api/coupons/admin 304 - 157ms
+GET /api/coupons/admin 304 - 116ms
+GET /api/banners 304 - 117ms
+GET /api/banners 304 - 202ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 179ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 181ms
+PATCH /api/banners/69b40e651784a5f6cf94cf09/toggle-home 200 - 242ms
+GET /api/banners 200 - 115ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 112ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 211ms
+GET /api/banners 304 - 208ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 200ms
+GET /api/banners 304 - 199ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[dotenv@17.2.3] injecting env (15) from .env -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+[32m[nodemon] restarting due to changes...[39m
+MongoDB Connected: ac-4fupgp8-shard-00-00.poktw2r.mongodb.net
+[32m[nodemon] starting `node server.js`[39m
+[dotenv@17.2.3] injecting env (15) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+MongoDB Connected: ac-4fupgp8-shard-00-00.poktw2r.mongodb.net
+Server running on port 5001
+GET /api/destinations 304 - 100ms
+GET /api/coupons 304 - 94ms
+GET /api/banners/active 200 - 93ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 162ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 115ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 222ms
+GET /api/banners 304 - 250ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 211ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 114ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 171ms
+GET /api/banners 304 - 165ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 203ms
+GET /api/banners 304 - 202ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 183ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+GET /api/banners 304 - 128ms
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 141ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 195ms
+GET /api/banners 304 - 206ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 113ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 234ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 269ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 113ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 183ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 188ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 191ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 161ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 163ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 104ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 183ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 183ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 101ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 126ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 187ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 155ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 160ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 190ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 110ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 120ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 199ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 120ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 140ms
+GET /api/buses 304 - 161ms
+GET /api/destinations/admin 304 - 180ms
+GET /api/routes/admin 304 - 252ms
+GET /api/buses 304 - 116ms
+GET /api/destinations/admin 304 - 132ms
+GET /api/routes/admin 304 - 215ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 203ms
+GET /api/banners 304 - 140ms
+GET /api/banners 304 - 205ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 127ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 127ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 473ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 125ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 170ms
+GET /api/buses 304 - 230ms
+GET /api/destinations/admin 304 - 241ms
+GET /api/routes/admin 304 - 331ms
+GET /api/buses 304 - 135ms
+GET /api/destinations/admin 304 - 137ms
+GET /api/routes/admin 304 - 183ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 220ms
+GET /api/banners 304 - 123ms
+GET /api/banners 304 - 197ms
+GET /api/auth/users reached
+GET /api/auth/users 200 - 204ms
+GET /api/auth/users reached
+GET /api/auth/users 304 - 203ms
+GET /api/banners 304 - 130ms
+GET /api/banners 304 - 216ms
+GET /api/coupons/admin 304 - 237ms
+GET /api/coupons/admin 304 - 203ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 115ms
+GET /api/banners 304 - 222ms
+GET /api/banners 304 - 250ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 145ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 226ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 143ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 217ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 214ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 111ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 128ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 131ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+GET /api/banners 304 - 224ms
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 233ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+GET /api/banners 304 - 109ms
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 114ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 119ms
+GET /api/destinations/admin 304 - 192ms
+GET /api/buses 304 - 199ms
+GET /api/routes/admin 304 - 304ms
+GET /api/buses 304 - 190ms
+GET /api/destinations/admin 304 - 194ms
+GET /api/routes/admin 304 - 258ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 181ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 173ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 111ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 112ms
+GET /api/banners 304 - 188ms
+GET /api/banners 304 - 236ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 170ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 116ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 178ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 182ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 109ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 187ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 180ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 107ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 157ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 197ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 216ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 200ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 212ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 105ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 208ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 214ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 115ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 166ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 213ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 101ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 221ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 216ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 101ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 214ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 125ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 105ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 123ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 110ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 114ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 186ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 113ms
+GET /api/banners 304 - 113ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 251ms
+GET /api/banners 304 - 251ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 108ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 271ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 157ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 110ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 277ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 175ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 112ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 186ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 161ms
+GET /api/banners 304 - 159ms
+--- NOTIFICATION DEBUG ---
+User ID from token: 697aeffb1ad7039b41f2295c
+User Role: admin
+Found 8 notifications
+---------------------------
+GET /api/notifications 304 - 212ms
+GET /api/banners 304 - 210ms
+

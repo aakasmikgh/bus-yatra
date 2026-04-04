@@ -10,7 +10,6 @@ import PromoCodes from './pages/PromoCodes';
 import Users from './pages/Users';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
-import PaymentPortal from './pages/PaymentPortal';
 import ManageBanners from './pages/ManageBanners';
 import './index.css';
 
@@ -34,7 +33,7 @@ function App() {
                 {/* Auth Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
-                <Route path="/payment-gateway" element={<PaymentPortal />} />
+
 
                 {/* Dashboard Routes with Layout */}
                 <Route element={<ProtectedRoute />}>

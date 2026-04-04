@@ -12,7 +12,7 @@ BusYatra is designed to address the fragmented nature of bus ticketing in Nepal.
 Objectives Recap:
 - Provide an ACID-compliant mobile booking experience.
 - Implement ML-based (KNN) seat recommendations for user personalization.
-- Secure wallet-based transactions with transparent concurrency control.
+- Secure wallet-based transactions for reliable bookings.
 
 Scope:
 The system encompasses a cross-platform passenger mobile app, a comprehensive operator/admin web dashboard, and a scalable Node.js/Express backend. 
@@ -30,8 +30,7 @@ Module Status Table:
 | Web Dashboard (Admin/Operator) | Completed*   | Analytics & Management live|
 | Backend Services (APIs)        | Completed    | 9+ core services active   |
 | ML Module (KNN Recommendation) | In Progress  | Dataset collection phase  |
-| ACID + Concurrency Control     | Completed    | Atomic seat reservation   |
-| Wallet transactions (2PC)      | Prototype    | External gateway integrated|
+| Wallet transactions           | Completed    | Khalti/Stripe integrated   |
 | Documentation (Swagger)        | Completed    | API schema finalized      |
 ----------------------------------------------------------------------------
 *Core functionality refers to Login, Search, Seat Selection, and Booking flows.
@@ -46,10 +45,10 @@ The project followed an Agile Scrum approach. We have completed 2 main sprints (
 - Sprint 3 (Ongoing): Personalization (ML Recommendation, Analytics Polish) - WIP
 
 3.2 Requirements Status
-Functional and Non-functional requirements are currently frozen. Minor adjustments were made to the payment verification flow to enhance reliability with eSewa V2 APIs.
+Functional and Non-functional requirements are currently frozen. Minor adjustments were made to the payment verification flow to enhance reliability.
 
 3.3 Algorithms Implementation Status
-- 3.3.1 Seat Booking Concurrency: Implemented via MongoDB atomic identifiers and validation logic in `bookingController.js`.
+- 3.3.1 Seat Booking Integrity: Implemented via confirmed booking validation logic in `bookingController.js`.
 - 3.3.2 ML-Based Seat Recommendation: Prototype phase. Data features (age, gender, history) are being collected via user profiles.
 - 3.3.3 Search Optimization: Implemented. MongoDB indexes applied to `route`, `departureTime`, and `fare`.
 
@@ -65,17 +64,17 @@ ____________________________________________________________________________
 ____________________________________________________________________________
 - ER Diagram: Refined to 7 core collections (User, Bus, Route, Booking, Destination, Notification, Coupon).
 - API Documentation: Completed Swagger UI available at the `api-endpoints` server.
-- Sequence Diagrams: Updated for the eSewa/Stripe payment verification loop.
+- Sequence Diagrams: Updated for the Khalti/Stripe payment verification loop.
 
 ____________________________________________________________________________
 5. IMPLEMENTATION DETAILS BY MODULE
 ____________________________________________________________________________
 5.1 Mobile Application (User-Mobile)
-- Implemented Screens: Auth Stack, Dashboard, Bus Search, Seat Selection, Booking Summary, Checkout (eSewa/Stripe), My Trips.
+- Implemented Screens: Auth Stack, Dashboard, Bus Search, Seat Selection, Booking Summary, Checkout (Khalti/Stripe), My Trips.
 - Navigation: Dual approach using Expo Router (Tab + Stack navigation).
 
 5.2 Web Dashboard (Admin-Web)
-- Implemented Views: Real-time Analytics Dashboard, User Management, Bus/Route CRUD, Booking Logs, Payment Portal.
+- Implemented Views: Real-time Analytics Dashboard, User Management, Bus/Route CRUD, Booking Logs.
 - Features: Revenue tracking, route occupancy metrics, and automated admin notifications.
 
 5.3 Backend Services (Backend)
@@ -93,8 +92,7 @@ ____________________________________________________________________________
 ____________________________________________________________________________
 7. CHALLENGES AND RISK MANAGEMENT
 ____________________________________________________________________________
-- Technical Challenges: Navigating eSewa's signature verification for web/mobile redirects was resolved with a dedicated `paymentController` middleware.
-- Concurrency: Addressed "Double Booking" scenarios using MongoDB pre-save validation and availability checks.
+- Booking Integrity: Addressed "Double Booking" scenarios using validation checks against confirmed bookings.
 
 ____________________________________________________________________________
 8. EXPECTED OUTCOMES
@@ -107,7 +105,7 @@ By final defense, BusYatra will deliver:
 ____________________________________________________________________________
 9. CONCLUSION
 ____________________________________________________________________________
-The project is approximately 75% complete. The core booking infrastructure is robust and tested. The final phase will focus on fine-tuning the recommendation model and stress-testing the concurrency mechanisms for high-volume scenarios.
+The project is approximately 75% complete. The core booking infrastructure is robust and tested. The final phase will focus on fine-tuning the recommendation model and stress-testing the system for high-volume scenarios.
 
 ____________________________________________________________________________
 10. REFERENCES
@@ -115,4 +113,4 @@ ____________________________________________________________________________
 1. MongoDB Documentation - ACID Transactions.
 2. React Native Documentation - Navigation & Deep Linking.
 3. IEEE Standard for Software Progress Reports.
-4. eSewa/Stripe API Integration Guides.
+4. Khalti/Stripe API Integration Guides.

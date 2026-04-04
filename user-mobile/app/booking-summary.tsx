@@ -76,32 +76,26 @@ export default function BookingSummaryScreen() {
         const fetchRouteDetails = async () => {
             console.log('Fetching route details for:', params.routeId);
             try {
-                const response = await api.get('/routes');
+                const response = await api.get(`/routes/${params.routeId}`);
                 if (response.data.success) {
-                    console.log('Routes found in DB:', response.data.data.length);
-                    // Find matching route - try both String and ID comparison
-                    const currentRoute = response.data.data.find((r: any) =>
-                        String(r._id) === String(params.routeId)
-                    );
-
-                    if (currentRoute) {
-                        console.log('Match found:', currentRoute.origin?.name, 'to', currentRoute.destination?.name);
-                        console.log('Boarding points available:', currentRoute.boardingPoints);
-                        if (currentRoute.boardingPoints && currentRoute.boardingPoints.length > 0) {
-                            setBoardingPoints(currentRoute.boardingPoints);
-                            setSelectedBoardingPoint(currentRoute.boardingPoints[0]);
-                        } else {
-                            console.log('Route has no boarding points defined.');
-                            // Fallback if none defined
-                            setBoardingPoints(['Counter/Boarding Point']);
-                            setSelectedBoardingPoint('Counter/Boarding Point');
-                        }
+                    const currentRoute = response.data.data;
+                    console.log('Route Found:', currentRoute.origin?.name, 'to', currentRoute.destination?.name);
+                    console.log('Boarding points available:', currentRoute.boardingPoints);
+                    
+                    if (currentRoute.boardingPoints && currentRoute.boardingPoints.length > 0) {
+                        setBoardingPoints(currentRoute.boardingPoints);
+                        setSelectedBoardingPoint(currentRoute.boardingPoints[0]);
                     } else {
-                        console.log('Route ID', params.routeId, 'not found in list. Available IDs:', response.data.data.map((r: any) => r._id));
+                        console.log('Route has no boarding points defined.');
+                        setBoardingPoints(['Counter/Boarding Point']);
+                        setSelectedBoardingPoint('Counter/Boarding Point');
                     }
                 }
             } catch (err) {
                 console.error('Failed to fetch route details:', err);
+                // Fallback
+                setBoardingPoints(['Counter/Boarding Point']);
+                setSelectedBoardingPoint('Counter/Boarding Point');
             }
         };
         if (params.routeId) fetchRouteDetails();

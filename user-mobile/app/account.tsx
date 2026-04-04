@@ -132,9 +132,11 @@ export default function AccountScreen() {
                     style: 'destructive',
                     onPress: async () => {
                         try {
-                            await AsyncStorage.multiRemove(['token', 'user']);
-                            // Clear context immediately
+                            // Clear context immediately to trigger layout reset
                             setUserData(null);
+                            // Then clear storage
+                            await AsyncStorage.multiRemove(['token', 'user']);
+                            // Force manual redirect for snappiness
                             router.replace('/(auth)/login');
                         } catch (error) {
                             Alert.alert('Error', 'Failed to logout. Please try again.');

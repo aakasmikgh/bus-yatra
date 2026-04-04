@@ -39,15 +39,15 @@ export default function SupportScreen() {
         },
         {
             q: "What happens if the bus is cancelled by the operator?",
-            a: "If the operator cancels the trip, you are entitled to a 100% refund. The amount will be credited back to your Bus Yatra Wallet or original payment method (eSewa/Stripe) within 3-5 business days."
+            a: "If the operator cancels the trip, you are entitled to a 100% refund. The amount will be credited back to your Bus Yatra Wallet or original payment method within 3-5 business days."
         },
         {
             q: "Can I change my seat or travel date after booking?",
             a: "Direct seat changes are not possible once a ticket is issued. However, you can cancel and rebook. Please check our 'Cancellation Policy' for applicable fees, as some operators allow date changes if requested at least 24 hours in advance."
         },
         {
-            q: "I paid via eSewa but didn't get my ticket. What should I do?",
-            a: "Don't panic! Sometimes network issues delay the sync. First, check 'My Bookings'. If it's not there, please do not pay again. Contact our 24/7 support with your eSewa Transaction ID, and we will manually confirm your seat or issue a refund."
+            q: "I paid via Khalti/Stripe but didn't get my ticket. What should I do?",
+            a: "Don't panic! Sometimes network issues delay the sync. First, check 'My Bookings'. If it's not there, please do not pay again. Contact our 24/7 support with your Transaction ID, and we will manually confirm your seat or issue a refund."
         }
     ];
 
@@ -158,7 +158,7 @@ function HelpCenterModal({ visible, onClose }: { visible: boolean, onClose: () =
             icon: 'credit-card-outline',
             topics: [
                 { q: 'How to book a ticket?', a: '1. Select your route and date.\n2. Choose your preferred seats.\n3. Complete the payment and receive your ticket.' },
-                { q: 'Payment Methods', a: 'We accept eSewa, Stripe, and Cash.' },
+                { q: 'Payment Methods', a: 'We accept Khalti, Stripe, and Cash.' },
                 { q: 'Payment Failure', a: 'If money is deducted but the ticket isn\'t issued, please contact support with your transaction details. Refunds are processed automatically.' },
                 { q: 'Ticket Confirmation', a: 'You will receive your ticket via SMS, Email, and it will be available in the "My Bookings" section of the app.' },
             ]
@@ -170,7 +170,7 @@ function HelpCenterModal({ visible, onClose }: { visible: boolean, onClose: () =
             topics: [
                 { q: 'How to cancel?', a: 'Go to "My Bookings", select the ticket you wish to cancel, and tap the "Cancel Ticket" button.' },
                 { q: 'Refund Policy', a: 'Refunds are subject to a 10-20% deduction depending on the cancellation time before departure.' },
-                { q: 'Refund Time', a: 'Refunds typically take 3-5 business days to reflect in your eSewa or Bank account.' },
+                { q: 'Refund Time', a: 'Refunds typically take 3-5 business days to reflect in your Bank account or original payment method.' },
             ]
         },
         {
@@ -328,9 +328,10 @@ function ChatModal({ visible, onClose }: { visible: boolean, onClose: () => void
             } else {
                 setMessages(prev => [...prev, { role: 'bot', content: "I'm sorry, I'm having trouble connecting right now." }]);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Chat Error:', error);
-            setMessages(prev => [...prev, { role: 'bot', content: "Something went wrong. Please try again later." }]);
+            const errMsg = error.response?.data?.error || error.response?.data?.message || "Something went wrong. Please try again later.";
+            setMessages(prev => [...prev, { role: 'bot', content: errMsg }]);
         } finally {
             setIsTyping(false);
         }
@@ -356,10 +357,12 @@ function ChatModal({ visible, onClose }: { visible: boolean, onClose: () => void
             transparent={true}
             visible={visible}
             onRequestClose={onClose}
+            statusBarTranslucent={true}
         >
             <View style={styles.modalOverlay}>
                 <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+                    keyboardVerticalOffset={Platform.OS === 'android' ? 60 : 0}
                     style={styles.modalContent}
                 >
                     <View style={styles.modalHandle} />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     StyleSheet,
     View,
@@ -8,9 +8,10 @@ import {
     KeyboardAvoidingView,
     Platform,
     ScrollView,
+    BackHandler, // Add BackHandler
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router'; // Add useFocusEffect
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import api from '../../utils/api';
@@ -24,6 +25,20 @@ export default function LoginScreen() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    // Disable hardware back button on Android
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                // Return true to prevent default back behavior
+                return true; 
+            };
+
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+            return () => subscription.remove();
+        }, [])
+    );
 
     const handleLogin = async () => {
         if (!email || !password) {

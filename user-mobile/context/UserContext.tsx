@@ -27,14 +27,26 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     const refreshUser = async () => {
         try {
+            const token = await AsyncStorage.getItem('token');
             const userJson = await AsyncStorage.getItem('user');
-            if (userJson) {
-                setUserData(JSON.parse(userJson));
+            
+            if (token && userJson) {
+                try {
+                    setUserData(JSON.parse(userJson));
+                } catch (e) {
+                    console.error('Invalid user JSON:', e);
+                    setUserData(null);
+                }
             } else {
+                // Clear any partial session data
                 setUserData(null);
+                if (!token || !userJson) {
+                    await AsyncStorage.multiRemove(['token', 'user']);
+                }
             }
         } catch (error) {
             console.error('Error refreshing user data:', error);
+            setUserData(null);
         } finally {
             setLoading(false);
         }

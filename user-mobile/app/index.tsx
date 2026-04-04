@@ -1,38 +1,23 @@
-import { Redirect, router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Redirect } from 'expo-router';
 import { View, ActivityIndicator } from 'react-native';
+import { useUser } from '../context/UserContext';
 
 export default function Index() {
-    const [loading, setLoading] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const { userData } = useUser();
 
-    useEffect(() => {
-        checkAuth();
-    }, []);
-
-    const checkAuth = async () => {
-        try {
-            const token = await AsyncStorage.getItem('token');
-            setIsAuthenticated(!!token);
-        } catch (e) {
-            setIsAuthenticated(false);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#007AFF" />
-            </View>
-        );
-    }
-
-    if (isAuthenticated) {
+    // If we reached here and have user data, go to tabs
+    if (userData) {
         return <Redirect href="/(tabs)" />;
     }
 
-    return <Redirect href="/(auth)/login" />;
+    // If we reached here and DON'T have user data, go to login
+    if (!userData) {
+        return <Redirect href="/(auth)/login" />;
+    }
+
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+            <ActivityIndicator size="large" color="#007AFF" />
+        </View>
+    );
 }

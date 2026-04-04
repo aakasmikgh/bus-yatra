@@ -14,7 +14,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../utils/api';
@@ -40,7 +40,12 @@ interface Location {
 import { useUser } from '../../context/UserContext';
 
 export default function HomeScreen() {
-  const { userData } = useUser();
+  const { userData, loading } = useUser();
+
+  // SECOND LAYER AUTH GUARD: If we reach here without a user, kick back to login immediately
+  if (!userData && !loading) {
+     return <Redirect href="/(auth)/login" />;
+  }
   const [from, setFrom] = useState<Location | null>(null);
   const [to, setTo] = useState<Location | null>(null);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
