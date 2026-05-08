@@ -34,7 +34,9 @@ const ManageRoutes = () => {
         distance: '',
         boardingPoints: [],
         availableDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        status: 'Active'
+        status: 'Active',
+        roadCondition: 1.0,
+        trafficDelay: 0
     };
 
     const [formData, setFormData] = useState(initialFormState);
@@ -69,22 +71,22 @@ const ManageRoutes = () => {
             if (routesData.success) {
                 setRoutes(routesData.data);
             } else {
-                console.warn('Failed to fetch routes:', routesData.error);
+                setError(routesData.error || 'Failed to fetch routes');
+                return;
             }
 
             if (busesData.success) {
-                // Showing all buses, but logging if they are active
-                console.log(`Buses count: ${busesData.data.length}`);
                 setBuses(busesData.data);
             } else {
-                console.warn('Failed to fetch buses:', busesData.error);
+                setError(busesData.error || 'Failed to fetch buses');
+                return;
             }
 
             if (destsData.success) {
-                console.log(`Destinations count: ${destsData.data.length}`);
                 setDestinations(destsData.data);
             } else {
-                console.warn('Failed to fetch destinations:', destsData.error);
+                setError(destsData.error || 'Failed to fetch destinations');
+                return;
             }
 
         } catch (err) {
@@ -120,7 +122,9 @@ const ManageRoutes = () => {
                 departureTime: `${formData.departureTime} ${formData.departureAmPm}`,
                 arrivalTime: `${formData.arrivalTime} ${formData.arrivalAmPm}`,
                 fare: Number(formData.fare),
-                distance: formData.distance ? Number(formData.distance) : undefined
+                distance: formData.distance ? Number(formData.distance) : undefined,
+                roadCondition: Number(formData.roadCondition),
+                trafficDelay: Number(formData.trafficDelay)
             };
 
             const response = await fetch(url, {
@@ -198,7 +202,9 @@ const ManageRoutes = () => {
             distance: route.distance?.toString() || '',
             boardingPoints: route.boardingPoints || [],
             availableDays: route.availableDays || DAYS,
-            status: route.status || 'Active'
+            status: route.status || 'Active',
+            roadCondition: route.roadCondition || 1.0,
+            trafficDelay: route.trafficDelay || 0
         });
         setIsModalOpen(true);
     };
@@ -315,10 +321,23 @@ const ManageRoutes = () => {
                                             <div className="flex flex-col text-xs text-slate-600">
                                                 <span className="text-slate-800 font-bold">NPR {route.fare}</span>
                                                 <span className="mt-1 flex items-center text-[10px]"><Clock size={10} className="mr-1 opacity-50" /> {route.departureTime}</span>
+                                                {route.trafficDelay > 0 && (
+                                                    <span className="mt-1 text-[9px] text-rose-500 flex items-center">
+                                                        <AlertCircle size={10} className="mr-1" /> +{route.trafficDelay}m delay
+                                                    </span>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <div className="flex flex-wrap gap-1 max-w-[200px]">
+                                            <div className="flex flex-col text-[10px]">
+                                                <span className={`font-bold ${route.roadCondition > 1.5 ? 'text-rose-500' : route.roadCondition > 1.0 ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                                    {route.roadCondition === 1.0 ? 'Excellent' : route.roadCondition <= 1.5 ? 'Construction' : 'Rough Road'}
+                                                </span>
+                                                <span className="text-slate-400 mt-1">{route.distance || 0} KM</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            <div className="flex flex-wrap gap-1 max-w-[150px]">
                                                 {route.boardingPoints?.length > 0 ? route.boardingPoints.map((p, idx) => (
                                                     <span key={idx} className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[9px] whitespace-nowrap">{p}</span>
                                                 )) : <span className="text-slate-300 text-[9px] italic">No boarding points</span>}
@@ -534,17 +553,50 @@ const ManageRoutes = () => {
                                 {/* Available Days */}
                                 <div className="col-span-1 md:col-span-2 space-y-3">
                                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Schedule (Available Days)</label>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-3 mt-2">
                                         {DAYS.map(day => (
                                             <button
                                                 key={day} type="button"
                                                 onClick={() => toggleDay(day)}
-                                                className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all ${formData.availableDays.includes(day) ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                                                className={`px-5 py-3 rounded-2xl text-xs font-black transition-all shadow-sm ${formData.availableDays.includes(day) ? 'bg-blue-600 text-white shadow-blue-500/20' : 'bg-white border border-slate-200 text-slate-400 hover:bg-slate-50'}`}
                                             >
                                                 {day.toUpperCase()}
                                             </button>
                                         ))}
                                     </div>
+                                </div>
+
+                                {/* Intelligent Routing Intelligence */}
+                                <div className="col-span-1 md:col-span-2 space-y-4 bg-blue-50/30 p-6 rounded-3xl border border-blue-100/50">
+                                    <label className="text-[10px] font-black text-blue-600 uppercase tracking-widest ml-1 flex items-center">
+                                        <TrendingUp size={12} className="mr-1" /> Algorithm Intelligence (Manual Weights)
+                                    </label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-slate-500 ml-1">Road Condition</label>
+                                            <select
+                                                value={formData.roadCondition}
+                                                onChange={(e) => setFormData({ ...formData, roadCondition: e.target.value })}
+                                                className="w-full bg-white border-2 border-transparent focus:border-blue-500/10 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 outline-none transition-all shadow-sm"
+                                            >
+                                                <option value={1.0}>Excellent (1.0x)</option>
+                                                <option value={1.5}>Construction (1.5x)</option>
+                                                <option value={2.0}>Rough/Damaged (2.0x)</option>
+                                                <option value={5.0}>Blocked/Severe (5.0x)</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-slate-500 ml-1">Traffic Delay (Minutes)</label>
+                                            <input
+                                                type="number"
+                                                placeholder="0"
+                                                value={formData.trafficDelay}
+                                                onChange={(e) => setFormData({ ...formData, trafficDelay: e.target.value })}
+                                                className="w-full bg-white border-2 border-transparent focus:border-blue-500/10 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 outline-none transition-all shadow-sm"
+                                            />
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-blue-500 font-medium italic">These values influence the A* Shortest Path algorithm used in the mobile app.</p>
                                 </div>
                             </div>
 

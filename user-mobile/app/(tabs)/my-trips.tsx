@@ -57,7 +57,6 @@ export default function MyTripsScreen() {
               .header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 30px; position: relative; }
               .brand { font-size: 24px; font-weight: 800; letter-spacing: -1px; margin-bottom: 5px; }
               .sub-brand { font-size: 12px; opacity: 0.7; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
-              .status-badge { position: absolute; right: 30px; top: 30px; background: #22c55e; color: white; padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
 
               /* Main Body */
               .body { padding: 30px; }
@@ -96,7 +95,7 @@ export default function MyTripsScreen() {
               <div class="header">
                 <div class="brand">${booking.bus?.name || 'Bus Yatra'}</div>
                 <div class="sub-brand">Official E-Ticket</div>
-                <div class="status-badge">Confirmed</div>
+                <div class="status-badge">Valid Ticket</div>
               </div>
               
               <div class="body">

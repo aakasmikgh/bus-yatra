@@ -18,6 +18,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { StatusBar } from 'expo-status-bar';
 import api from '../utils/api';
+import { useIsFocused } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 // Calculate seat size based on 5 spots (4 seats + 1 aisle)
@@ -52,8 +53,8 @@ export default function SeatSelectionScreen() {
     const params = useLocalSearchParams();
     const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
     const [bookedSeats, setBookedSeats] = useState<string[]>([]);
-    const [recommendedSeats, setRecommendedSeats] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
+    const isFocused = useIsFocused();
     const [showBusDetails, setShowBusDetails] = useState(false);
 
     // Parse data from params
@@ -64,34 +65,33 @@ export default function SeatSelectionScreen() {
     const totalSeats = parseInt(String(params.seats)) || 30;
 
     useEffect(() => {
-        fetchAvailability();
-    }, [params.routeId, params.date]);
+        if (isFocused) {
+            fetchAvailability();
+        }
+    }, [params.routeId, params.date, isFocused]);
 
     const fetchAvailability = async () => {
         setLoading(true);
         const travelDate = params.date || new Date().toISOString().split('T')[0];
+        if (!params.busId) {
+            console.warn('[Sync Debug] Missing busId in params. Skipping availability fetch.');
+            setLoading(false);
+            return;
+        }
+
         try {
             const response = await api.get('/bookings/booked-seats', {
                 params: {
-                    routeId: params.routeId,
+                    busId: params.busId,
                     date: travelDate
                 }
             });
             if (response.data.success) {
+                console.log(`[Sync Debug] Booked Seats for ${travelDate}:`, response.data.data);
                 setBookedSeats(response.data.data);
             }
 
-            // Fetch KNN Recommendations
-            try {
-                const recRes = await api.get('/bookings/recommend-seats', {
-                    params: { routeId: params.routeId, date: travelDate }
-                });
-                if (recRes.data.success) {
-                    setRecommendedSeats(recRes.data.data);
-                }
-            } catch (recErr) {
-                console.log('KNN recommendation fetch failed (silent)', recErr);
-            }
+
 
         } catch (err) {
             console.error('Failed to fetch availability:', err);
@@ -100,85 +100,101 @@ export default function SeatSelectionScreen() {
         }
     };
 
-    // Precise layout generator with remainder at the FRONT
+    // Rock-Solid Sequential Layout (A=Left side, B=Right side)
     const generateLayout = () => {
         const layout = [];
         let seatCounter = 1;
         const total = totalSeats;
-
-        // Back row is 5 seats
-        const hasBackRow = total > 5;
-        const mainCount = hasBackRow ? total - 5 : total;
-
-        const fullRows = Math.floor(mainCount / 4);
-        const frontRemainder = mainCount % 4;
-
-        // 1. Partial row at the TOP (Front)
-        if (frontRemainder > 0) {
+        
+        // Define number of seats per group (e.g., 2 seats on left, 2 seats on right = 4 per row)
+        // Standard bus is 2-2. 
+        const mainCount = total > 5 ? total - 5 : total;
+        const remainder = mainCount % 4;
+        
+        // Handle Front Row (Remainder)
+        if (remainder > 0) {
             const row: any = { isLastRow: false, left: [], right: [] };
-
-            // Prioritize RIGHT side (Behind Driver) as requested
-            const rightLimit = Math.min(frontRemainder, 2);
-            const leftLimit = frontRemainder - rightLimit;
-
-            for (let j = 0; j < leftLimit; j++) {
-                const id = `A${seatCounter}`;
-                row.left.push({ id, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
+            // First 2 seats of remainder go to left
+            for (let j = 0; j < 2 && seatCounter <= remainder; j++) {
+                const id = String(seatCounter);
+                const label = `A${seatCounter}`;
+                row.left.push({ id, label, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
                 seatCounter++;
             }
-            for (let j = 0; j < rightLimit; j++) {
-                const id = `B${seatCounter}`;
-                row.right.push({ id, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
+            // Next seats go to right
+            for (let j = 0; j < 2 && seatCounter <= remainder; j++) {
+                const id = String(seatCounter);
+                const label = `B${seatCounter}`;
+                row.right.push({ id, label, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
                 seatCounter++;
             }
             layout.push(row);
         }
 
-        // 2. Full regular rows
-        for (let i = 0; i < fullRows; i++) {
+        // Handle remaining rows (all 4-seat rows)
+        while (seatCounter <= mainCount) {
             const row: any = { isLastRow: false, left: [], right: [] };
-            // Left Column
+            
+            // Left Group loops exactly twice
             for (let j = 0; j < 2; j++) {
-                const id = `A${seatCounter}`;
-                row.left.push({ id, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
-                seatCounter++;
+                if (seatCounter <= mainCount) {
+                    const id = String(seatCounter);
+                    const label = `A${seatCounter}`;
+                    row.left.push({ id, label, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
+                    seatCounter++;
+                }
             }
-            // Right Column
+
+            // Right Group loops exactly twice
             for (let j = 0; j < 2; j++) {
-                const id = `B${seatCounter}`;
-                row.right.push({ id, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
-                seatCounter++;
+                if (seatCounter <= mainCount) {
+                    const id = String(seatCounter);
+                    const label = `B${seatCounter}`;
+                    row.right.push({ id, label, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
+                    seatCounter++;
+                }
             }
+
             layout.push(row);
         }
 
-        // 3. Back row (Special 5-seat row)
-        if (hasBackRow) {
+        // Add Back Row (5 seats) - Specialized naming to block entire row
+        if (total > 5 && seatCounter <= total) {
             const backRow: any = { isLastRow: true, left: [], middle: null, right: [] };
             // First 2 seats (Left)
             for (let i = 0; i < 2; i++) {
                 if (seatCounter <= total) {
-                    const id = `L${seatCounter}`;
-                    backRow.left.push({ id, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
+                    const id = String(seatCounter);
+                    const label = `L${seatCounter}`;
+                    backRow.left.push({ id, label, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
                     seatCounter++;
                 }
             }
             // Middle seat
             if (seatCounter <= total) {
-                const id = `M${seatCounter}`;
-                backRow.middle = { id, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE };
+                const id = String(seatCounter);
+                const label = `M${seatCounter}`;
+                backRow.middle = { id, label, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE };
                 seatCounter++;
             }
             // Last 2 seats (Right)
             for (let i = 0; i < 2; i++) {
                 if (seatCounter <= total) {
-                    const id = `R${seatCounter}`;
-                    backRow.right.push({ id, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
+                    const id = String(seatCounter);
+                    const label = `R${seatCounter}`;
+                    backRow.right.push({ id, label, type: bookedSeats.includes(id) ? SEAT_TYPES.BOOKED : SEAT_TYPES.AVAILABLE });
                     seatCounter++;
                 }
             }
             layout.push(backRow);
         }
+
+        const bookedCount = layout.reduce((acc, row) => 
+            acc + (row.left?.filter((s:any) => s.type === SEAT_TYPES.BOOKED).length || 0) + 
+            (row.right?.filter((s:any) => s.type === SEAT_TYPES.BOOKED).length || 0) + 
+            (row.middle?.type === SEAT_TYPES.BOOKED ? 1 : 0), 0
+        );
+        console.log(`[Sync Debug] Layout Generated: ${layout.length} rows, ${bookedCount} seats booked in UI. Booked IDs in state: ${JSON.stringify(bookedSeats)}`);
 
         return layout;
     };
@@ -198,7 +214,6 @@ export default function SeatSelectionScreen() {
     const getSeatStyles = (id: string, type: string) => {
         if (type === SEAT_TYPES.BOOKED) return { color: COLORS.BOOKED, icon: 'car-seat' };
         if (selectedSeats.includes(id)) return { color: COLORS.SELECTED, icon: 'car-seat' };
-        if (recommendedSeats.includes(id)) return { color: '#FFD700', icon: 'star' };
         return { color: COLORS.AVAILABLE, icon: 'car-seat' };
     };
 
@@ -239,7 +254,7 @@ export default function SeatSelectionScreen() {
                     </Text>
                     <Text style={styles.busTypeSub}>{params.type}</Text>
                     <View style={styles.infoRow}>
-                        <Text style={styles.infoText}>{params.date}</Text>
+                        <Text style={styles.infoText}>{new Date(String(params.date)).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</Text>
                         <Text style={styles.infoText}>{params.origin} - {params.destination}</Text>
                     </View>
                 </View>
@@ -251,23 +266,15 @@ export default function SeatSelectionScreen() {
                         <Text style={styles.legendLabel}>Booked</Text>
                     </View>
                     <View style={styles.legendItem}>
+                        <MaterialCommunityIcons name="car-seat" size={24} color={COLORS.SELECTED} />
+                        <Text style={styles.legendLabel}>Selected</Text>
+                    </View>
+                    <View style={styles.legendItem}>
                         <MaterialCommunityIcons name="car-seat" size={24} color={COLORS.AVAILABLE} />
                         <Text style={styles.legendLabel}>Available</Text>
                     </View>
-                    <View style={styles.legendItem}>
-                        <MaterialCommunityIcons name="star" size={24} color="#FFD700" />
-                        <Text style={styles.legendLabel}>Recommended</Text>
-                    </View>
                 </View>
 
-                {recommendedSeats.length > 0 && (
-                    <View style={{backgroundColor: '#FFFBE6', padding: 12, marginHorizontal: 20, borderRadius: 8, flexDirection: 'row', alignItems: 'center', marginBottom: 15, borderWidth: 1, borderColor: '#FFE58F'}}>
-                        <MaterialCommunityIcons name="star-face" size={26} color="#FAAD14" />
-                        <Text style={{marginLeft: 10, color: '#D48806', fontWeight: 'bold', fontSize: 13, flex: 1}}>
-                            ✨ Based on your profile, we highly recommend seats: {recommendedSeats.join(', ')}
-                        </Text>
-                    </View>
-                )}
 
                 <View style={styles.busInnerContainer}>
                     {/* Driver Section */}
@@ -296,23 +303,23 @@ export default function SeatSelectionScreen() {
                                                 size={30}
                                                 color={getSeatStyles(seat.id, seat.type).color}
                                             />
-                                            <Text style={styles.seatIdText}>{seat.id}</Text>
+                                            <Text style={styles.seatIdText}>{seat.label}</Text>
                                         </TouchableOpacity>
                                     ))}
                                 </View>
 
-                                {row.isLastRow ? (
-                                    <TouchableOpacity
+                                {row.isLastRow ? (                                    <TouchableOpacity
                                         style={styles.seatWrapper}
-                                        onPress={() => row.middle && toggleSeat(row.middle.id, row.middle.type)}
+                                        onPress={() => toggleSeat(row.middle?.id, row.middle?.type)}
                                     >
                                         <MaterialCommunityIcons
-                                            name={row.middle ? getSeatStyles(row.middle.id, row.middle.type).icon as any : 'car-seat'}
+                                            name={getSeatStyles(row.middle?.id, row.middle?.type).icon as any}
                                             size={30}
-                                            color={row.middle ? getSeatStyles(row.middle.id, row.middle.type).color : COLORS.BOOKED}
+                                            color={getSeatStyles(row.middle?.id, row.middle?.type).color}
                                         />
-                                        <Text style={styles.seatIdText}>{row.middle?.id}</Text>
+                                        <Text style={styles.seatIdText}>{row.middle?.label}</Text>
                                     </TouchableOpacity>
+
                                 ) : (
                                     <View style={styles.aisle} />
                                 )}
@@ -329,7 +336,7 @@ export default function SeatSelectionScreen() {
                                                 size={30}
                                                 color={getSeatStyles(seat.id, seat.type).color}
                                             />
-                                            <Text style={styles.seatIdText}>{seat.id}</Text>
+                                            <Text style={styles.seatIdText}>{seat.label}</Text>
                                         </TouchableOpacity>
                                     ))}
                                 </View>

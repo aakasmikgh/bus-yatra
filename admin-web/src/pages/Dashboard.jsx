@@ -5,6 +5,8 @@ import {
     Eye, X, Mail, Briefcase, Navigation, Smartphone, User, Phone
 } from 'lucide-react';
 import { API_BASE_URL } from '../config';
+import { apiFetch } from '../utils/api';
+
 
 const StatCard = ({ title, value, icon, color, trend, percentage, isPrimary }) => {
     const isPositive = trend === 'up' || parseInt(percentage) > 0;
@@ -87,12 +89,9 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('adminToken');
-            const response = await fetch(`${API_BASE_URL}/analytics`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await apiFetch('/analytics');
+            if (!response) return; // Redirecting to login
+
             const result = await response.json();
             if (result.success) {
                 setData(result.data);

@@ -5,12 +5,12 @@ import {
     Text,
     FlatList,
     TouchableOpacity,
-    SafeAreaView,
     Platform,
     ActivityIndicator,
     Modal,
     Pressable,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -32,6 +32,10 @@ export default function BusListScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [sortBy, setSortBy] = useState<'low' | 'high' | null>(null);
     const [showSortModal, setShowSortModal] = useState(false);
+    
+    // Algorithm States
+    const [algoResult, setAlgoResult] = useState<any>(null);
+    const [algoLoading, setAlgoLoading] = useState(false);
 
     useEffect(() => {
         fetchRoutes();
@@ -39,18 +43,43 @@ export default function BusListScreen() {
 
     const fetchRoutes = async () => {
         setLoading(true);
+        setAlgoResult(null); // Clear previous algo results
         try {
             const response = await api.get('/routes/search', {
                 params: { from, to, day, date }
             });
             if (response.data.success) {
                 setRoutes(response.data.data);
+                // ALWAYS trigger optimization to find the best path
+                fetchOptimizedRoute();
             }
         } catch (err) {
             console.error('Failed to fetch routes:', err);
         } finally {
             setLoading(false);
             setRefreshing(false);
+        }
+    };
+
+    const fetchOptimizedRoute = async () => {
+        setAlgoLoading(true);
+        try {
+            const response = await api.get(`/routes/optimize`, {
+                params: {
+                    startCity: from,
+                    endCity: to,
+                    day: day, // Pass the selected day (e.g. Tue)
+                    date: date // Pass the selected date (e.g. 2026-04-28)
+                }
+            });
+            if (response.data.success) {
+                console.log('[ALGO] Final Result in Mobile:', JSON.stringify(response.data.data));
+                setAlgoResult(response.data.data);
+            }
+        } catch (err) {
+            console.error('Algorithm failed:', err);
+        } finally {
+            setAlgoLoading(false);
         }
     };
 
@@ -69,7 +98,7 @@ export default function BusListScreen() {
         fetchRoutes();
     };
 
-    const renderBusItem = ({ item, index }: { item: any, index: number }) => {
+    const renderBusItem = ({ item, index, isAStar, isDijkstra }: { item: any, index: number, isAStar?: boolean, isDijkstra?: boolean }) => {
         const busAmenities = item.bus?.amenities || [];
         const displayedAmenities = busAmenities.slice(0, 4);
         const overflowCount = busAmenities.length > 4 ? busAmenities.length - 4 : 0;
@@ -79,6 +108,12 @@ export default function BusListScreen() {
                 entering={FadeInUp.delay(index * 100)}
                 style={styles.busCard}
             >
+                {isAStar && (
+                    <View style={styles.recommendedBadge}>
+                        <MaterialCommunityIcons name="star" size={10} color="#fff" />
+                        <Text style={styles.recommendedBadgeText}>AI RECOMMENDED</Text>
+                    </View>
+                )}
                 <View style={styles.busHeader}>
                     <View>
                         <Text style={styles.companyName}>{item.bus?.name || 'Unknown Bus'}</Text>
@@ -170,7 +205,7 @@ export default function BusListScreen() {
                 </TouchableOpacity>
                 <View style={styles.headerInfo}>
                     <Text style={styles.routeText}>{from} → {to}</Text>
-                    <Text style={styles.dateText}>{date} ({day})</Text>
+                    <Text style={styles.dateText}>{new Date(String(date)).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} ({day})</Text>
                 </View>
                 <TouchableOpacity
                     style={[styles.sortButton, sortBy && styles.sortButtonActive]}
@@ -192,27 +227,203 @@ export default function BusListScreen() {
             ) : (
                 <FlatList
                     data={getSortedRoutes()}
-                    renderItem={renderBusItem}
+                    renderItem={({ item, index }) => {
+                        const isAStarRecommended = algoResult?.a_star?.routeIds?.includes(item._id);
+                        const isDijkstraRecommended = algoResult?.dijkstra?.routeIds?.includes(item._id);
+                        return renderBusItem({ item, index, isAStar: isAStarRecommended, isDijkstra: isDijkstraRecommended });
+                    }}
                     keyExtractor={(item) => item._id}
                     contentContainerStyle={styles.listContent}
                     showsVerticalScrollIndicator={false}
                     onRefresh={onRefresh}
                     refreshing={refreshing}
                     ListHeaderComponent={() => (
-                        <Text style={styles.resultsCount}>{routes.length} Buses Available</Text>
-                    )}
+                        <View>
+                            <Text style={styles.resultsCount}>{routes.length} Buses Available</Text>
+                            
+                            {/* NEW: Smart Routing as a Primary Feature */}
+                            {(algoResult || algoLoading) && (
+                                <Animated.View entering={FadeInUp} style={styles.topAlgoContainer}>
+                                    <View style={styles.algoHeader}>
+                                        <MaterialCommunityIcons name="lightbulb-on-outline" size={22} color="#007AFF" />
+                                        <Text style={styles.algoHeaderTitle}>Suggestion</Text>
+                                    </View>
+                                    
+                                    {algoLoading ? (
+                                        <View style={[styles.algoLoadingCard, { paddingVertical: 10 }]}>
+                                            <ActivityIndicator size="small" color="#007AFF" />
+                                            <Text style={styles.algoLoadingText}>Finding smartest route...</Text>
+                                        </View>
+                                    ) : (
+                                        <View style={styles.algoComparisonRow}>
+                                        {/* A* Recommended */}
+                                        {algoResult?.a_star?.routeIds?.length > 0 && (
+                                            <TouchableOpacity 
+                                                style={styles.algoSmallCard}
+                                                onPress={() => {
+                                                    const routeId = algoResult?.a_star?.routeIds?.[0]?.id;
+                                                    console.log('[BOOK] Tapped Fastest. Route ID:', routeId);
+                                                    const fullRoute = routes.find(r => r._id?.toString() === routeId?.toString());
+                                                    if (fullRoute) {
+                                                        router.push({
+                                                            pathname: '/seat-selection',
+                                                            params: {
+                                                                routeId: fullRoute._id,
+                                                                busId: fullRoute.bus?._id,
+                                                                company: fullRoute.bus?.name,
+                                                                type: fullRoute.bus?.type,
+                                                                price: fullRoute.fare,
+                                                                departure: fullRoute.departureTime,
+                                                                origin: fullRoute.origin?.name,
+                                                                destination: fullRoute.destination?.name,
+                                                                seats: fullRoute.bus?.seats,
+                                                                date: date,
+                                                                amenities: JSON.stringify(fullRoute.bus?.amenities || []),
+                                                                images: JSON.stringify(fullRoute.bus?.images || []),
+                                                                boardingPoints: JSON.stringify(fullRoute.boardingPoints || []),
+                                                            }
+                                                        });
+                                                    } else {
+                                                        console.log('[BOOK] Route not found in current list');
+                                                        // Fallback: If not in list, we could fetch it, but usually it should be there.
+                                                    }
+                                                }}
+                                            >
+                                                <Text style={styles.algoCardLabel}>FASTEST ROUTE</Text>
+                                                <Text style={styles.algoBusName} numberOfLines={1}>
+                                                    {algoResult?.a_star?.routeIds?.[0]?.name}
+                                                </Text>
+                                                <Text style={styles.algoBusNumber}>
+                                                    {algoResult?.a_star?.routeIds?.[0]?.number}
+                                                </Text>
+                                                <View style={styles.algoMetaRow}>
+                                                    <MaterialCommunityIcons name="clock-outline" size={10} color="#666" />
+                                                    <Text style={styles.algoCardMeta}>Book Now</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        )}
+                                        
+                                        {/* Dijkstra Shortest */}
+                                        {algoResult?.dijkstra?.routeIds?.length > 0 && (
+                                            <TouchableOpacity 
+                                                style={[styles.algoSmallCard, { backgroundColor: '#F8F9FA' }]}
+                                                onPress={() => {
+                                                    const routeId = algoResult?.dijkstra?.routeIds?.[0]?.id;
+                                                    console.log('[BOOK] Tapped Shortest. Route ID:', routeId);
+                                                    const fullRoute = routes.find(r => r._id?.toString() === routeId?.toString());
+                                                    if (fullRoute) {
+                                                        router.push({
+                                                            pathname: '/seat-selection',
+                                                            params: {
+                                                                routeId: fullRoute._id,
+                                                                busId: fullRoute.bus?._id,
+                                                                company: fullRoute.bus?.name,
+                                                                type: fullRoute.bus?.type,
+                                                                price: fullRoute.fare,
+                                                                departure: fullRoute.departureTime,
+                                                                origin: fullRoute.origin?.name,
+                                                                destination: fullRoute.destination?.name,
+                                                                seats: fullRoute.bus?.seats,
+                                                                date: date,
+                                                                amenities: JSON.stringify(fullRoute.bus?.amenities || []),
+                                                                images: JSON.stringify(fullRoute.bus?.images || []),
+                                                                boardingPoints: JSON.stringify(fullRoute.boardingPoints || []),
+                                                            }
+                                                        });
+                                                    }
+                                                }}
+                                            >
+                                                <Text style={[styles.algoCardLabel, { color: '#666' }]}>SHORTEST ROUTE</Text>
+                                                <Text style={styles.algoBusName} numberOfLines={1}>
+                                                    {algoResult?.dijkstra?.routeIds?.[0]?.name}
+                                                </Text>
+                                                <Text style={styles.algoBusNumber}>
+                                                    {algoResult?.dijkstra?.routeIds?.[0]?.number}
+                                                </Text>
+                                                <View style={styles.algoMetaRow}>
+                                                    <MaterialCommunityIcons name="clock-outline" size={10} color="#666" />
+                                                    <Text style={styles.algoCardMeta}>Book Now</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
+                                )}
+                            </Animated.View>
+                        )}
+                    </View>
+                )}
                     ListEmptyComponent={() => (
                         <View style={styles.emptyContainer}>
                             <MaterialCommunityIcons name="bus-alert" size={80} color="#DDD" />
-                            <Text style={styles.emptyTitle}>No Buses Found</Text>
+                            <Text style={styles.emptyTitle}>No Direct Buses</Text>
                             <Text style={styles.emptySubtitle}>
-                                There are no buses available for this route on {day}. Try a different date or route.
+                                We couldn't find a direct bus from {from} to {to}.
                             </Text>
+                            
+                            {!algoResult ? (
+                                <TouchableOpacity
+                                    style={styles.algoButton}
+                                    onPress={fetchOptimizedRoute}
+                                    disabled={algoLoading}
+                                >
+                                    {algoLoading ? (
+                                        <ActivityIndicator color="#fff" />
+                                    ) : (
+                                        <>
+                                            <MaterialCommunityIcons name="molecule" size={20} color="#fff" style={{ marginRight: 8 }} />
+                                            <Text style={styles.retryButtonText}>Find Connecting Routes</Text>
+                                        </>
+                                    )}
+                                </TouchableOpacity>
+                            ) : (
+                                <View style={styles.algoResultContainer}>
+                                    <View style={styles.algoHeader}>
+                                        <MaterialCommunityIcons name="trending-up" size={20} color="#007AFF" />
+                                        <Text style={styles.algoHeaderTitle}>Smart Routing Results</Text>
+                                    </View>
+                                    <Text style={styles.algoHint}>Click a path to view available buses for the first leg</Text>
+                                    
+                                    {/* A* Result (Recommended) */}
+                                    <TouchableOpacity 
+                                        style={styles.pathCard}
+                                        onPress={() => {
+                                            const firstLeg = algoResult.a_star.path[1];
+                                            router.setParams({ from: from as string, to: firstLeg });
+                                        }}
+                                    >
+                                        <View style={styles.pathBadge}>
+                                            <Text style={styles.pathBadgeText}>RECOMMENDED (A*)</Text>
+                                        </View>
+                                        <Text style={styles.pathText}>
+                                            {algoResult.a_star.path.join(' → ')}
+                                        </Text>
+                                        <Text style={styles.pathSubtext}>Optimized for road & traffic conditions</Text>
+                                    </TouchableOpacity>
+
+                                    {/* Dijkstra Result (Shortest) */}
+                                    <TouchableOpacity 
+                                        style={[styles.pathCard, { backgroundColor: '#F8F9FA', marginTop: 12 }]}
+                                        onPress={() => {
+                                            const firstLeg = algoResult.dijkstra.path[1];
+                                            router.setParams({ from: from as string, to: firstLeg });
+                                        }}
+                                    >
+                                        <View style={[styles.pathBadge, { backgroundColor: '#666' }]}>
+                                            <Text style={styles.pathBadgeText}>SHORTEST (Dijkstra)</Text>
+                                        </View>
+                                        <Text style={styles.pathText}>
+                                            {algoResult.dijkstra.path.join(' → ')}
+                                        </Text>
+                                        <Text style={styles.pathSubtext}>Pure shortest distance</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+
                             <TouchableOpacity
-                                style={styles.retryButton}
+                                style={[styles.retryButton, { backgroundColor: 'transparent', marginTop: 10 }]}
                                 onPress={() => router.back()}
                             >
-                                <Text style={styles.retryButtonText}>Go Back</Text>
+                                <Text style={[styles.retryButtonText, { color: '#007AFF' }]}>Go Back</Text>
                             </TouchableOpacity>
                         </View>
                     )}
@@ -326,6 +537,29 @@ const styles = StyleSheet.create({
         color: '#666',
         marginBottom: 16,
         fontWeight: '600',
+    },
+    recommendedBadge: {
+        position: 'absolute',
+        top: -10,
+        right: 15,
+        backgroundColor: '#007AFF',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        zIndex: 10,
+        shadowColor: '#007AFF',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 4,
+    },
+    recommendedBadgeText: {
+        color: '#fff',
+        fontSize: 9,
+        fontWeight: '900',
+        marginLeft: 4,
     },
     busCard: {
         backgroundColor: '#fff',
@@ -515,6 +749,135 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: '700',
         fontSize: 16,
+    },
+    algoButton: {
+        marginTop: 30,
+        backgroundColor: '#007AFF',
+        paddingHorizontal: 30,
+        paddingVertical: 18,
+        borderRadius: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        shadowColor: '#007AFF',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.3,
+        shadowRadius: 20,
+        elevation: 5,
+    },
+    algoResultContainer: {
+        width: '100%',
+        paddingHorizontal: 10,
+        marginTop: 30,
+    },
+    algoHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 15,
+        justifyContent: 'center',
+    },
+    algoHeaderTitle: {
+        fontSize: 16,
+        fontWeight: '800',
+        color: '#333',
+        marginLeft: 8,
+        textTransform: 'uppercase',
+    },
+    pathCard: {
+        backgroundColor: '#E5F1FF',
+        padding: 20,
+        borderRadius: 24,
+        borderWidth: 1,
+        borderColor: '#007AFF20',
+    },
+    pathBadge: {
+        backgroundColor: '#007AFF',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 8,
+        alignSelf: 'flex-start',
+        marginBottom: 10,
+    },
+    pathBadgeText: {
+        color: '#fff',
+        fontSize: 10,
+        fontWeight: '900',
+    },
+    pathText: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#333',
+        lineHeight: 24,
+    },
+    algoHint: {
+        fontSize: 11,
+        color: '#999',
+        textAlign: 'center',
+        marginBottom: 15,
+        fontWeight: '600',
+    },
+    topAlgoContainer: {
+        backgroundColor: '#fff',
+        borderRadius: 24,
+        padding: 16,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: '#007AFF20',
+        shadowColor: '#007AFF',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 15,
+        elevation: 2,
+    },
+    algoLoadingCard: {
+        padding: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    algoLoadingText: {
+        marginTop: 10,
+        fontSize: 12,
+        color: '#007AFF',
+        fontWeight: '600',
+    },
+    algoComparisonRow: {
+        flexDirection: 'row',
+        marginTop: 10,
+    },
+    algoSmallCard: {
+        flex: 1,
+        backgroundColor: '#E5F1FF',
+        padding: 12,
+        borderRadius: 16,
+        marginHorizontal: 4,
+    },
+    algoCardLabel: {
+        fontSize: 8,
+        fontWeight: '900',
+        color: '#007AFF',
+        marginBottom: 6,
+        letterSpacing: 0.5,
+    },
+    algoBusName: {
+        fontSize: 14,
+        fontWeight: '800',
+        color: '#1a1a1a',
+    },
+    algoBusNumber: {
+        fontSize: 10,
+        fontWeight: '600',
+        color: '#666',
+        marginTop: 2,
+    },
+    algoMetaRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 8,
+    },
+    algoCardMeta: {
+        fontSize: 10,
+        color: '#007AFF',
+        fontWeight: '700',
+        marginLeft: 4,
     },
     sortButton: {
         width: 40,

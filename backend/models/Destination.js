@@ -12,6 +12,14 @@ const destinationSchema = new mongoose.Schema({
         enum: ['Active', 'Inactive'],
         default: 'Active'
     },
+    latitude: {
+        type: Number,
+        required: false
+    },
+    longitude: {
+        type: Number,
+        required: false
+    },
     createdAt: {
         type: Date,
         default: Date.now

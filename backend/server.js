@@ -34,6 +34,8 @@ const analyticsRoutes = require('./routes/analyticsRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const bannerRoutes = require('./routes/bannerRoutes');
+const spatialRoutes = require('./routes/spatialRoutes');
+
 
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/auth', auth);
@@ -46,6 +48,8 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/banners', bannerRoutes);
+app.use('/api/spatial', spatialRoutes);
+
 
 app.get('/api/health-check', (req, res) => {
   res.json({ success: true, routes: ['notifications', 'auth', 'buses', 'destinations', 'routes', 'bookings', 'coupons', 'payment', 'analytics'] });

@@ -193,17 +193,18 @@ export default function BookingSummaryScreen() {
             Alert.alert('Missing Information', 'add gmail');
             return;
         }
-        if (!selectedBoardingPoint) {
-            Alert.alert('Missing Information', 'Please select a Boarding Point');
-            return;
-        }
         if (!acceptedTerms) {
             Alert.alert('Terms Required', 'Please accept the Terms & Conditions');
             return;
         }
+        if (!selectedBoardingPoint) {
+            Alert.alert('Missing Information', 'Please select a Boarding Point');
+            return;
+        }
+        console.log(`[Sync Debug] Creating Booking - Route: ${params.routeId}, Date: ${params.date}, Seats: [${(params.selectedSeats as string).split(',').map(s => s.trim()).join(', ')}]`);
 
         try {
-            // Create booking record first (Pending status)
+            // Create booking record
             const bookingData = {
                 route: params.routeId,
                 bus: params.busId,
@@ -214,8 +215,7 @@ export default function BookingSummaryScreen() {
                 contactPhone: phoneNumber,
                 contactEmail: emailAddress,
                 boardingPoint: selectedBoardingPoint,
-                promoCode: appliedPromo ? appliedPromo.code : '',
-                status: 'Pending'
+                promoCode: appliedPromo ? appliedPromo.code : ''
             };
 
             const response = await api.post('/bookings', bookingData);
@@ -260,7 +260,7 @@ export default function BookingSummaryScreen() {
                     <View style={styles.headerInfo}>
                         <Text style={styles.headerTitle}>Passenger Details</Text>
                         <Text style={styles.headerSub}>
-                            {params.date}, {params.departure}, {params.passengerCount} passenger(s)
+                            {new Date(String(params.date)).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}, {params.departure}, {params.passengerCount} passenger(s)
                         </Text>
                     </View>
                     <View style={styles.timerContainer}>
@@ -288,7 +288,7 @@ export default function BookingSummaryScreen() {
                     </View>
                     <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Date</Text>
-                        <Text style={styles.detailValue}>{params.date}</Text>
+                        <Text style={styles.detailValue}>{new Date(String(params.date)).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</Text>
                     </View>
                     <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Departure Time</Text>

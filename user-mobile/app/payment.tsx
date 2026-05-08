@@ -29,15 +29,16 @@ const COLORS = {
 
 const PAYMENT_METHODS = [
     { id: 'cash', name: 'Cash', icon: 'cash', description: 'Pay manually at the counter' },
-    { id: 'khalti', name: 'Khalti', icon: 'wallet', description: 'Faster, Safer, Easier' },
     { id: 'stripe', name: 'Stripe', icon: 'credit-card-outline', description: 'Visa/MasterCard/Apple Pay' },
 ];
 
 export default function PaymentScreen() {
     const params = useLocalSearchParams();
-    console.log('Payment Screen Params:', params);
+    const grandTotal = params.grandTotal || '0';
+    const bookingId = params.bookingId;
     const [selectedMethod, setSelectedMethod] = useState('cash');
     const [loading, setLoading] = useState(false);
+    const [pidx, setPidx] = useState<string | null>(null);
 
     // 1. Listen for the "Return" from the browser via deep link
     useEffect(() => {
@@ -47,9 +48,10 @@ export default function PaymentScreen() {
 
             // Handle both Expo Go (null path, but queryParams exist) and standalone
             const status = queryParams?.status || (event.url.includes('status=success') ? 'success' : event.url.includes('status=failure') ? 'failure' : null);
+            const returnedPidx = queryParams?.pidx as string;
 
-            if (status === 'success' || path === 'my-trips') {
-                console.log("Payment Verified via Deep Link!");
+            if (status === 'success' || path === 'my-trips' || event.url.includes('status=success')) {
+                console.log("Payment Success Signal via Deep Link!");
                 router.replace('/(tabs)/my-trips');
             } else if (status === 'failure' || status === 'User-cancelled') {
                 setLoading(false);
@@ -65,10 +67,7 @@ export default function PaymentScreen() {
         });
 
         return () => subscription.remove();
-    }, []);
-
-    const grandTotal = params.grandTotal || '0';
-    const bookingId = params.bookingId;
+    }, [pidx, bookingId]);
 
     return (
         <View style={styles.container}>
@@ -138,41 +137,7 @@ export default function PaymentScreen() {
                     style={[styles.payButton, loading && { opacity: 0.7 }]}
                     onPress={async () => {
                         console.log('Current Selected Method:', selectedMethod);
-                        if (selectedMethod === 'khalti') {
-                            try {
-                                setLoading(true);
-
-                                // Get dynamic base URL for Expo compatibility
-                                const appRedirectUrl = Linking.createURL('/');
-                                console.log('Generated App Redirect URL:', appRedirectUrl);
-
-                                const response = await api.post('/payment/initialize-khalti', {
-                                    bookingId: bookingId,
-                                    amount: grandTotal,
-                                    appRedirectUrl: appRedirectUrl
-                                });
-
-                                if (response.data.success) {
-                                    const { paymentUrl } = response.data.data;
-                                    console.log('Opening Khalti in External Browser:', paymentUrl);
-
-                                    // Open the system browser (Chrome/Safari)
-                                    const supported = await Linking.canOpenURL(paymentUrl);
-                                    if (supported) {
-                                        await Linking.openURL(paymentUrl);
-                                        // We stay in loading state while user is in browser
-                                    } else {
-                                        setLoading(false);
-                                        Alert.alert("Error", "Unable to open the browser.");
-                                    }
-                                }
-                            } catch (error: any) {
-                                console.error('Payment Error:', error);
-                                Alert.alert('Error', error.response?.data?.error || 'Failed to initialize payment');
-                            } finally {
-                                setLoading(false);
-                            }
-                        } else if (selectedMethod === 'stripe') {
+                        if (selectedMethod === 'stripe') {
                             try {
                                 setLoading(true);
                                 const response = await api.post('/payment/initialize-stripe', {
@@ -200,30 +165,11 @@ export default function PaymentScreen() {
                                 setLoading(false);
                             }
                         } else {
-                            try {
-                                setLoading(true);
-                                // Update booking status to Confirmed for Cash
-                                console.log(`Attempting to confirm booking ${bookingId} for Cash`);
-
-                                if (!bookingId) {
-                                    throw new Error('Booking ID is missing. Please go back and try again.');
-                                }
-
-                                await api.put(`/bookings/${bookingId}/status`, {
-                                    status: 'Confirmed',
-                                    paymentMethod: 'Cash'
-                                });
-
-                                router.push({
-                                    pathname: '/booking-success',
-                                    params: { ...params }
-                                });
-                            } catch (error: any) {
-                                console.error('Cash Confirmation Error:', error);
-                                Alert.alert('Error', error.response?.data?.error || error.message || 'Failed to confirm booking');
-                            } finally {
-                                setLoading(false);
-                            }
+                            // Cash method - direct success
+                            router.push({
+                                pathname: '/booking-success',
+                                params: { ...params }
+                            });
                         }
                     }}
                     disabled={loading}

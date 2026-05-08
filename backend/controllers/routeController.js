@@ -158,7 +158,7 @@ exports.searchRoutes = async (req, res, next) => {
                     if (timeMatch) {
                         let hours = parseInt(timeMatch[1], 10);
                         const minutes = parseInt(timeMatch[2], 10);
-                        const period = timeMatch[3]; 
+                         const period = timeMatch[3]; 
 
                         if (period) {
                             if (period.toUpperCase() === 'PM' && hours !== 12) hours += 12;

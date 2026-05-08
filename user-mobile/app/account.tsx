@@ -364,7 +364,7 @@ export default function AccountScreen() {
                                     </View>
                                     <View style={styles.featureRow}>
                                         <MaterialCommunityIcons name="check-circle" size={20} color={COLORS.PRIMARY} />
-                                        <Text style={styles.featureText}>Secure Khalti & Stripe payments</Text>
+                                        <Text style={styles.featureText}>Secure Stripe & Cash payments</Text>
                                     </View>
                                     <View style={styles.featureRow}>
                                         <MaterialCommunityIcons name="check-circle" size={20} color={COLORS.PRIMARY} />

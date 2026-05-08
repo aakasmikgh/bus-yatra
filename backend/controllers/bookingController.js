@@ -1,14 +1,26 @@
 const Booking = require('../models/Booking');
 const Coupon = require('../models/Coupon');
 const Notification = require('../models/Notification');
+const mongoose = require('mongoose');
+
 
 
 // Helper to normalize dates to YYYY-MM-DD
 const normalizeDate = (dateStr) => {
     try {
+        if (!dateStr) return new Date().toISOString().split('T')[0];
+        
+        // If it's already YYYY-MM-DD, just return it
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+
         const d = new Date(dateStr);
         if (isNaN(d.getTime())) return dateStr;
-        return d.toISOString().split('T')[0];
+        
+        // Use local components to avoid UTC shift
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     } catch (e) {
         return dateStr;
     }
@@ -19,28 +31,57 @@ const normalizeDate = (dateStr) => {
 // @access  Public
 exports.getBookedSeats = async (req, res, next) => {
     try {
-        let { routeId, date } = req.query;
+        let { busId, date } = req.query;
 
-        if (!routeId || !date) {
+        if (!busId || !date) {
             return res.status(400).json({
                 success: false,
-                error: 'Please provide routeId and date'
+                error: 'Please provide busId and date'
             });
         }
 
         const normalizedDate = normalizeDate(date);
+        console.log(`[Sync Debug] BookedSeats Request - Bus: ${busId}, Date: ${normalizedDate}`);
 
-        // 1. Fetch ALL confirmed bookings for this route and date
+        // Broad Search Diagnosis (for final confirmation in logs)
+        const allDateBookings = await Booking.find({ bookingDate: normalizedDate });
+        console.log(`[Sync Debug] Broad Date Check: Found ${allDateBookings.length} total bookings on ${normalizedDate}.`);
+
+        // Fetch bookings for this PHYSICAL BUS and date (Admin Panel Style)
+        let queryBusId;
+        try {
+            const cleanBusId = String(busId).trim();
+            if (cleanBusId === 'undefined' || !mongoose.Types.ObjectId.isValid(cleanBusId)) {
+                console.error(`[Sync Debug] Invalid Bus ID: ${busId}`);
+                return res.status(200).json({ success: true, data: [] }); // Return empty for bad ID to prevent crash
+            }
+            queryBusId = new mongoose.Types.ObjectId(cleanBusId);
+        } catch (e) {
+            return res.status(200).json({ success: true, data: [] });
+        }
+
         const confirmedBookings = await Booking.find({
-            route: routeId,
-            bookingDate: normalizedDate,
-            status: 'Confirmed'
-        });
+            bus: queryBusId,
+            bookingDate: normalizedDate
+        }).populate('bus', 'name number series');
 
-        // 2. Flatten all seats from all confirmed bookings
+        console.log(`[Sync Debug] Query Result - Found ${confirmedBookings.length} booking records for Bus ID: ${queryBusId}`);
+
+        // 2. Flatten all seats from confirmed bookings and HEAL them to pure numbers
         const actualBookedSeats = confirmedBookings.reduce((acc, booking) => {
-            return acc.concat(booking.seats.map(s => s.trim().toUpperCase()));
+            const busLabel = booking.bus ? `${booking.bus.name} (${booking.bus.number})` : 'Unknown Bus';
+            console.log(`[Sync Debug]   - Booking ${booking._id}: Bus: ${busLabel}, Seats: [${booking.seats.join(', ')}], Status: ${booking.status}`);
+            
+            // Extract numbers only to heal legacy A13/B3 into 13/3
+            const healedSeats = booking.seats.map(s => {
+                const numMatch = s.match(/\d+/);
+                return numMatch ? numMatch[0] : s.trim().toUpperCase();
+            });
+            
+            return acc.concat(healedSeats);
         }, []);
+
+        console.log(`[Sync Debug] Total Healed Booked Seats (Numeric): [${actualBookedSeats.join(', ')}]`);
 
         // No longer using SeatAvailability for concurrency control as requested.
         // We calculate booked seats directly from the confirmed bookings.
@@ -77,11 +118,17 @@ exports.createBooking = async (req, res, next) => {
         req.body.bookingDate = bookingDate;
         req.body.seats = seats;
 
-        // --- SIMPLE AVAILABILITY CHECK ---
+        // --- SIMPLE AVAILABILITY CHECK (Check ALL bookings) ---
+        let checkRouteId = route;
+        try {
+            if (mongoose.Types.ObjectId.isValid(route)) {
+                checkRouteId = new mongoose.Types.ObjectId(route);
+            }
+        } catch (e) {}
+
         const existingBookings = await Booking.find({
-            route,
-            bookingDate,
-            status: 'Confirmed'
+            route: checkRouteId,
+            bookingDate
         });
 
         const allBookedSeats = existingBookings.reduce((acc, b) => acc.concat(b.seats), []);
@@ -112,14 +159,23 @@ exports.createBooking = async (req, res, next) => {
             }
         }
 
+        // Normalize seats to pure numbers (no prefixes) for DB storage
+        const healedSeats = (seats || []).map(s => {
+            const numMatch = String(s).match(/\d+/);
+            return numMatch ? numMatch[0] : String(s).trim().toUpperCase();
+        });
+        req.body.seats = healedSeats;
+
+        console.log(`[Sync Debug] Creating Booking - Route: ${route}, Date: ${bookingDate}, Healed Seats: [${healedSeats.join(', ')}]`);
+
         let booking;
         try {
             booking = await Booking.create(req.body);
         } catch (bookingError) {
-
+            console.error('[Sync Debug] Booking Creation Failed:', bookingError.message);
             throw bookingError;
         }
-        console.log('New booking created:', booking._id);
+        console.log(`[Sync Debug] Booking Saved - ID: ${booking._id}, Saved Date: ${booking.bookingDate}`);
 
         if (req.body.promoCode) {
             await Coupon.findOneAndUpdate(
@@ -292,82 +348,3 @@ exports.deleteBooking = async (req, res, next) => {
     }
 };
 
-// @desc    Get KNN seat recommendations for a user on a specific route
-// @route   GET /api/bookings/recommend-seats
-// @access  Private
-exports.getSeatRecommendations = async (req, res, next) => {
-    try {
-        const { routeId, date } = req.query;
-        if (!routeId || !date) {
-            return res.status(400).json({ success: false, error: 'Please provide routeId and date' });
-        }
-
-        const User = require('../models/User'); // Fixed model loading
-        const currentUser = await User.findById(req.user.id);
-        
-        if (!currentUser) {
-            return res.status(404).json({ success: false, error: 'User not found' });
-        }
-
-        const normalizedDate = normalizeDate(date);
-
-        // 1. Get ALL confirmed bookings for this route
-        const historicalBookings = await Booking.find({ route: routeId, status: 'Confirmed' }).populate('user', 'age gender');
-        
-        let neighbors = [];
-        
-        // 2. Calculate Distance (KNN)
-        historicalBookings.forEach(booking => {
-            if (!booking.user || booking.user._id.toString() === req.user.id.toString()) return;
-
-            let distance = 0;
-            const age1 = currentUser.age || 30;
-            const age2 = booking.user.age || 30;
-            distance += Math.pow((age1 - age2) / 100, 2);
-
-            const gender1 = currentUser.gender || 'Other';
-            const gender2 = booking.user.gender || 'Other';
-            if (gender1 !== gender2) distance += 0.5;
-
-            distance = Math.sqrt(distance);
-
-            neighbors.push({
-                distance,
-                seats: booking.seats
-            });
-        });
-
-        // 3. Sort by nearest neighbors
-        neighbors.sort((a, b) => a.distance - b.distance);
-        const topNeighbors = neighbors.slice(0, 10);
-
-        // Tally recommended seats
-        let seatFrequency = {};
-        topNeighbors.forEach(n => {
-            n.seats.forEach(seat => {
-                seatFrequency[seat] = (seatFrequency[seat] || 0) + 1;
-            });
-        });
-
-        let recommendedSeats = Object.keys(seatFrequency).sort((a, b) => seatFrequency[b] - seatFrequency[a]);
-
-        // 4. Filter out currently booked seats
-        const confirmedNow = await Booking.find({ route: routeId, bookingDate: normalizedDate, status: 'Confirmed' });
-        const currentlyBookedSeats = confirmedNow.reduce((acc, b) => acc.concat(b.seats), []);
-
-        recommendedSeats = recommendedSeats.filter(seat => !currentlyBookedSeats.includes(seat));
-
-        if (recommendedSeats.length === 0) {
-            recommendedSeats = ['1A', '2A', '1B', '2B'].filter(seat => !currentlyBookedSeats.includes(seat));
-        }
-
-        res.status(200).json({
-            success: true,
-            data: recommendedSeats.slice(0, 2)
-        });
-
-    } catch (error) {
-        console.error('KNN Recommendation Error:', error);
-        res.status(500).json({ success: false, error: 'Server Error' });
-    }
-};

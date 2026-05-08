@@ -17,7 +17,7 @@ and a robust analytics suite for system administrators.
 
 1.2. Problem Statement
 The current bus ticketing landscape in Nepal is heavily fragmented. Passengers 
-often navigate multiple platforms (Trip Turbo, Khalti, etc.) with 
+often navigate multiple platforms (Trip Turbo, etc.) with 
 inconsistent data, lack of real-time seat tracking, and zero personalization. 
 Moreover, operators struggle with manual route management and the high risk of 
 double-bookings during peak hours.
@@ -63,8 +63,6 @@ leveraging its non-blocking I/O model for high concurrency.
 2.2. Literature Review
 Analysis of existing systems:
 - **Trip Turbo**: Strong mobile presence but lacks AI-driven personalization.
-- **Khalti**: Excellent payment gateway but acts as a generalized platform 
-  without deep integration into specific bus fleet mechanics.
 - **Sajha Yatayat**: Reliable operator service but lacks a sophisticated 
   seat-level availability API for third-party optimization.
 
@@ -80,7 +78,7 @@ from route discovery to seat selection and final payment verification.
 3.1.1. Requirement Analysis
 i. Functional Requirements:
 - **Passenger**: Search routes, Select seats, Pay via 
-  Khalti/Stripe, Support via Gemini Chatbot.
+  Stripe/Cash, Support via Gemini Chatbot.
 - **Operator**: Manage assigned vehicles, View booking logs, Update arrival times.
 - **Admin**: Approve/Reject operator accounts, Monitor system-wide revenue, 
   Manage dynamic promo codes.
@@ -125,7 +123,7 @@ ________________________________________________________________________________
 2. **Balanced Tree (B-Tree) Indexing**: MongoDB-layer optimization for route 
    discovery using logarithmic O(log n) lookup.
 3. **Cryptographic Hashing (Bcrypt/SHA-256)**: Secure password salting and 
-   payment signature verification for Khalti/Stripe.
+   payment signature verification for Stripe.
 4. **Generative AI (Gemini via OpenRouter)**: Context-aware ticketing support 
    Chatbot for 24/7 automated passenger queries.
 6. **Seat Integrity**: Validation logic to ensure seats are not double-booked.

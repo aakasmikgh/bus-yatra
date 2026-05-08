@@ -126,7 +126,7 @@ export default function HomeScreen() {
       params: {
         from: from.name,
         to: to.name,
-        date: new Date(selectedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+        date: selectedDate,
         day: dayOfWeek
       }
     });

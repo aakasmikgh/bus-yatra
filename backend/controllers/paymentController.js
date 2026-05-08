@@ -1,138 +1,5 @@
-const axios = require('axios');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Booking = require('../models/Booking');
-
-// @desc    Initialize Khalti payment
-// @route   POST /api/payment/initialize-khalti
-// @access  Private
-exports.initializeKhalti = async (req, res) => {
-    try {
-        const { bookingId, amount, appRedirectUrl } = req.body;
-
-        if (!bookingId || !amount) {
-            return res.status(400).json({
-                success: false,
-                error: 'Please provide bookingId and amount'
-            });
-        }
-
-        const khaltiPayload = {
-            return_url: `${process.env.BACKEND_URL}/api/payment/verify-khalti?app_url=${encodeURIComponent(appRedirectUrl || 'usermobile://')}`,
-            website_url: process.env.BACKEND_URL,
-            amount: Math.round(Number(amount) * 100), // Amount in paisa
-            purchase_order_id: bookingId,
-            purchase_order_name: `Bus Ticket Booking - ${bookingId}`,
-            customer_info: {
-                name: req.user.name,
-                email: req.user.email,
-                phone: req.user.phone ? req.user.phone.replace(/\D/g, '').slice(-10) : '9800000000'
-            }
-        };
-
-        // Sanitize the key to remove accidental spaces or hidden characters from .env
-        const secretKey = (process.env.KHALTI_SECRET_KEY || 'test_secret_key_68791341fdd94846a146f0457ff7b455').trim();
-        
-        // Use explicit environment variable if present, otherwise detect from key
-        const isLive = process.env.KHALTI_IS_LIVE === 'true' || secretKey.startsWith('live_');
-        const baseUrl = isLive ? 'https://khalti.com/api/v2' : 'https://dev.khalti.com/api/v2';
-
-        const response = await axios.post(
-            `${baseUrl}/epayment/initiate/`,
-            khaltiPayload,
-            {
-                headers: {
-                    'Authorization': `Key ${secretKey}`,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
-
-        if (response.data && response.data.payment_url) {
-            // Update the booking method to Khalti immediately
-            await Booking.findByIdAndUpdate(bookingId, { paymentMethod: 'Khalti' });
-
-            res.status(200).json({
-                success: true,
-                data: {
-                    paymentUrl: response.data.payment_url,
-                    pidx: response.data.pidx
-                }
-            });
-        } else {
-            throw new Error('Failed to get payment URL from Khalti');
-        }
-    } catch (error) {
-        console.error('--- KHALTI INIT ERROR ---');
-        if (error.response) {
-            console.error('Status:', error.response.status);
-            console.error('Data:', JSON.stringify(error.response.data, null, 2));
-        } else {
-            console.error('Message:', error.message);
-        }
-        res.status(500).json({
-            success: false,
-            error: error.response?.data?.detail || error.message || 'Khalti initialization failed'
-        });
-    }
-};
-
-// @desc    Verify Khalti payment
-// @route   GET /api/payment/verify-khalti
-// @access  Public (Callback from Khalti)
-exports.verifyKhalti = async (req, res) => {
-    try {
-        const { pidx, purchase_order_id, status, app_url } = req.query;
-
-        if (!pidx || status !== 'Completed') {
-            return res.redirect(`${app_url || 'usermobile://'}/payment?status=failure`);
-        }
-
-        const secretKey = process.env.KHALTI_SECRET_KEY || 'test_secret_key_68791341fdd94846a146f0457ff7b455';
-        const isLive = process.env.KHALTI_IS_LIVE === 'true' || secretKey.startsWith('live_');
-        const baseUrl = isLive ? 'https://khalti.com/api/v2' : 'https://dev.khalti.com/api/v2';
-
-        // Verify with Khalti lookup API
-        const response = await axios.post(
-            `${baseUrl}/epayment/lookup/`,
-            { pidx },
-            {
-                headers: {
-                    'Authorization': `Key ${secretKey}`,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
-
-        if (response.data && response.data.status === 'Completed') {
-            const bookingId = purchase_order_id;
-            const booking = await Booking.findById(bookingId);
-
-            if (!booking) {
-                return res.status(404).send('Booking not found');
-            }
-
-            booking.status = 'Confirmed';
-            booking.paymentMethod = 'Khalti';
-            booking.transactionId = pidx;
-            await booking.save();
-
-            res.redirect(`${app_url || 'usermobile://'}/my-trips?status=success&bookingId=${bookingId}`);
-        } else {
-            res.redirect(`${app_url || 'usermobile://'}/payment?status=failure`);
-        }
-    } catch (error) {
-        console.error('--- KHALTI VERIFY ERROR ---');
-        if (error.response) {
-            console.error('Status:', error.response.status);
-            console.error('Error Data:', JSON.stringify(error.response.data, null, 2));
-        } else {
-            console.error('Message:', error.message);
-        }
-        res.status(500).send(`<h1>Payment Verification Failed</h1><p>${error.response?.data?.detail || error.message}</p>`);
-    }
-};
-
-
 
 // @desc    Initialize Stripe payment
 // @route   POST /api/payment/initialize-stripe
@@ -198,8 +65,17 @@ exports.stripeSuccess = async (req, res) => {
 
         if (session.payment_status === 'paid') {
             console.log(`Payment confirmed by Stripe for Session: ${session_id}`);
-            // The user requested removing the auto-confirmed status update logic here
-            // because they will handle the UI/Trips flow manually in the app later.
+            
+            const booking = await Booking.findById(bookingId);
+            if (booking) {
+                console.log(`Found booking ${bookingId}`);
+                booking.transactionId = session_id;
+                booking.paymentMethod = 'Stripe';
+                await booking.save();
+                console.log(`Booking ${bookingId} payment tracked by Stripe.`);
+            } else {
+                console.error(`Booking ${bookingId} not found in Stripe callback!`);
+            }
 
             res.send(`
                 <html>

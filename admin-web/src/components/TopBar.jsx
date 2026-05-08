@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Search, Bell, Menu, User, ChevronDown, Check, X, Clock, UserPlus, Ticket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
+import { apiFetch } from '../utils/api';
+
 
 const TopBar = ({ onMenuClick, isCollapsed, toggleCollapse }) => {
     const navigate = useNavigate();
@@ -21,10 +23,9 @@ const TopBar = ({ onMenuClick, isCollapsed, toggleCollapse }) => {
 
     const fetchNotifications = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            const response = await fetch(`${API_BASE_URL}/notifications`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const response = await apiFetch('/notifications');
+            if (!response) return;
+
             const data = await response.json();
             if (data.success) {
                 setNotifications(data.data);
@@ -37,10 +38,8 @@ const TopBar = ({ onMenuClick, isCollapsed, toggleCollapse }) => {
 
     const markAsRead = async (id) => {
         try {
-            const token = localStorage.getItem('adminToken');
-            await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}` }
+            await apiFetch(`/notifications/${id}/read`, {
+                method: 'PUT'
             });
             fetchNotifications();
         } catch (err) {
@@ -48,12 +47,11 @@ const TopBar = ({ onMenuClick, isCollapsed, toggleCollapse }) => {
         }
     };
 
+
     const markAllRead = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            await fetch(`${API_BASE_URL}/notifications/read-all`, {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}` }
+            await apiFetch('/notifications/read-all', {
+                method: 'PUT'
             });
             fetchNotifications();
         } catch (err) {
@@ -64,10 +62,8 @@ const TopBar = ({ onMenuClick, isCollapsed, toggleCollapse }) => {
     const clearAllNotifications = async () => {
         if (!window.confirm('Are you sure you want to clear all notifications?')) return;
         try {
-            const token = localStorage.getItem('adminToken');
-            await fetch(`${API_BASE_URL}/notifications/clear`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+            await apiFetch('/notifications/clear', {
+                method: 'DELETE'
             });
             setNotifications([]);
             setUnreadCount(0);
@@ -75,6 +71,7 @@ const TopBar = ({ onMenuClick, isCollapsed, toggleCollapse }) => {
             console.error('Failed to clear notifications:', err);
         }
     };
+
 
     const handleLogout = () => {
         localStorage.removeItem('adminToken');

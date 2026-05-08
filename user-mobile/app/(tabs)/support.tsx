@@ -46,7 +46,7 @@ export default function SupportScreen() {
             a: "Direct seat changes are not possible once a ticket is issued. However, you can cancel and rebook. Please check our 'Cancellation Policy' for applicable fees, as some operators allow date changes if requested at least 24 hours in advance."
         },
         {
-            q: "I paid via Khalti/Stripe but didn't get my ticket. What should I do?",
+            q: "I paid via Stripe but didn't get my ticket. What should I do?",
             a: "Don't panic! Sometimes network issues delay the sync. First, check 'My Bookings'. If it's not there, please do not pay again. Contact our 24/7 support with your Transaction ID, and we will manually confirm your seat or issue a refund."
         }
     ];
@@ -158,7 +158,7 @@ function HelpCenterModal({ visible, onClose }: { visible: boolean, onClose: () =
             icon: 'credit-card-outline',
             topics: [
                 { q: 'How to book a ticket?', a: '1. Select your route and date.\n2. Choose your preferred seats.\n3. Complete the payment and receive your ticket.' },
-                { q: 'Payment Methods', a: 'We accept Khalti, Stripe, and Cash.' },
+                { q: 'Payment Methods', a: 'We accept Stripe and Cash.' },
                 { q: 'Payment Failure', a: 'If money is deducted but the ticket isn\'t issued, please contact support with your transaction details. Refunds are processed automatically.' },
                 { q: 'Ticket Confirmation', a: 'You will receive your ticket via SMS, Email, and it will be available in the "My Bookings" section of the app.' },
             ]

@@ -31,6 +31,14 @@ const routeSchema = new mongoose.Schema({
     distance: {
         type: Number
     },
+    roadCondition: {
+        type: Number,
+        default: 1.0 // 1.0 = Excellent, 1.5 = Construction, 2.0 = Rough
+    },
+    trafficDelay: {
+        type: Number,
+        default: 0 // In minutes
+    },
     boardingPoints: {
         type: [String],
         default: []

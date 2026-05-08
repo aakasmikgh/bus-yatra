@@ -30,7 +30,7 @@ Module Status Table:
 | Web Dashboard (Admin/Operator) | Completed*   | Analytics & Management live|
 | Backend Services (APIs)        | Completed    | 9+ core services active   |
 | ML Module (KNN Recommendation) | In Progress  | Dataset collection phase  |
-| Wallet transactions           | Completed    | Khalti/Stripe integrated   |
+| Wallet transactions           | Completed    | Stripe/Cash integrated    |
 | Documentation (Swagger)        | Completed    | API schema finalized      |
 ----------------------------------------------------------------------------
 *Core functionality refers to Login, Search, Seat Selection, and Booking flows.
@@ -64,13 +64,13 @@ ____________________________________________________________________________
 ____________________________________________________________________________
 - ER Diagram: Refined to 7 core collections (User, Bus, Route, Booking, Destination, Notification, Coupon).
 - API Documentation: Completed Swagger UI available at the `api-endpoints` server.
-- Sequence Diagrams: Updated for the Khalti/Stripe payment verification loop.
+- Sequence Diagrams: Updated for the Stripe payment verification loop.
 
 ____________________________________________________________________________
 5. IMPLEMENTATION DETAILS BY MODULE
 ____________________________________________________________________________
 5.1 Mobile Application (User-Mobile)
-- Implemented Screens: Auth Stack, Dashboard, Bus Search, Seat Selection, Booking Summary, Checkout (Khalti/Stripe), My Trips.
+- Implemented Screens: Auth Stack, Dashboard, Bus Search, Seat Selection, Booking Summary, Checkout (Stripe/Cash), My Trips.
 - Navigation: Dual approach using Expo Router (Tab + Stack navigation).
 
 5.2 Web Dashboard (Admin-Web)
@@ -113,4 +113,4 @@ ____________________________________________________________________________
 1. MongoDB Documentation - ACID Transactions.
 2. React Native Documentation - Navigation & Deep Linking.
 3. IEEE Standard for Software Progress Reports.
-4. Khalti/Stripe API Integration Guides.
+4. Stripe API Integration Guides.

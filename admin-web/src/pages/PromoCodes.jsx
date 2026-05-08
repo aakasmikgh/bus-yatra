@@ -35,7 +35,10 @@ const PromoCodes = () => {
             const data = await response.json();
             if (data.success) {
                 setPromos(data.data || []);
+            } else {
+                setError(data.error || 'Failed to load coupons');
             }
+
         } catch (err) {
             console.error('Fetch error:', err);
             setError('Failed to load coupons');

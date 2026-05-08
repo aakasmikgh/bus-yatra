@@ -5,15 +5,14 @@ const {
     getMyBookings,
     getAllBookings,
     deleteBooking,
-    updateBookingStatus,
-    getSeatRecommendations
+    updateBookingStatus
 } = require('../controllers/bookingController');
 const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 router.get('/booked-seats', getBookedSeats);
-router.get('/recommend-seats', protect, getSeatRecommendations);
+
 router.get('/', getAllBookings); // GET /api/bookings
 router.post('/', protect, createBooking);
 router.get('/my', protect, getMyBookings);

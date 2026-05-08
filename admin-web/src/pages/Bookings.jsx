@@ -48,6 +48,32 @@ const Bookings = () => {
         }
     };
 
+    const handleStatusToggle = async (id, currentStatus) => {
+        const newStatus = currentStatus === 'Confirmed' ? 'Pending' : 'Confirmed';
+        if (!window.confirm(`Are you sure you want to change status to ${newStatus}?`)) return;
+
+        try {
+            const token = localStorage.getItem('adminToken');
+            const response = await fetch(`${API_BASE_URL}/bookings/${id}/status`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+            const data = await response.json();
+            if (data.success) {
+                fetchBookings();
+            } else {
+                alert(data.error || 'Failed to update status');
+            }
+        } catch (err) {
+            console.error('Status update error:', err);
+            alert('Error updating status');
+        }
+    };
+
     const openViewModal = (booking) => {
         setSelectedBooking(booking);
         setIsViewModalOpen(true);
@@ -59,7 +85,7 @@ const Bookings = () => {
     );
 
     const handleExportCSV = () => {
-        const headers = ['Booking ID', 'Passenger', 'Phone', 'Email', 'Bus', 'Route', 'Date', 'Time', 'Boarding Point', 'Seats', 'Amount', 'Payment Method', 'Status'];
+        const headers = ['Booking ID', 'Passenger', 'Phone', 'Email', 'Bus', 'Route', 'Date', 'Time', 'Boarding Point', 'Seats', 'Amount', 'Payment Method'];
 
         const csvData = bookings.map(booking => [
             booking._id,
@@ -73,8 +99,7 @@ const Bookings = () => {
             booking.boardingPoint,
             (booking.seats || []).join('; '),
             booking.totalPrice,
-            booking.paymentMethod,
-            'Confirmed'
+            booking.paymentMethod
         ]);
 
         const escapeCsv = (text) => {
