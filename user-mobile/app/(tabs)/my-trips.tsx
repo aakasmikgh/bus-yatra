@@ -174,34 +174,46 @@ export default function MyTripsScreen() {
 
     const isExpired = (dateStr: string) => {
         try {
+            if (!dateStr) return false;
+            
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            // Robust parsing for "DD MMM YYYY" format (e.g., "30 Jan 2026")
-            const parts = dateStr.split(' ');
-            if (parts.length !== 3) return false;
-
-            const day = parseInt(parts[0], 10);
-            const monthStr = parts[1].toLowerCase().substring(0, 3);
-            const year = parseInt(parts[2], 10);
-
-            const months: { [key: string]: number } = {
-                jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-                jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
-            };
-
-            const month = months[monthStr];
-            if (month === undefined) {
-                // Fallback to standard parser if manual fails
-                const fallbackDate = new Date(dateStr);
-                fallbackDate.setHours(0, 0, 0, 0);
-                return !isNaN(fallbackDate.getTime()) && fallbackDate < today;
+            // 1. Try parsing YYYY-MM-DD format (e.g. "2026-05-21")
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                const parts = dateStr.split('-');
+                const year = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1; // 0-indexed month
+                const day = parseInt(parts[2], 10);
+                const bookingDate = new Date(year, month, day);
+                bookingDate.setHours(0, 0, 0, 0);
+                return bookingDate < today;
             }
 
-            const bookingDate = new Date(year, month, day);
-            bookingDate.setHours(0, 0, 0, 0);
+            // 2. Try parsing "DD MMM YYYY" format (e.g., "30 Jan 2026")
+            const parts = dateStr.split(' ');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0], 10);
+                const monthStr = parts[1].toLowerCase().substring(0, 3);
+                const year = parseInt(parts[2], 10);
 
-            return bookingDate < today;
+                const months: { [key: string]: number } = {
+                    jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+                    jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+                };
+
+                const month = months[monthStr];
+                if (month !== undefined) {
+                    const bookingDate = new Date(year, month, day);
+                    bookingDate.setHours(0, 0, 0, 0);
+                    return bookingDate < today;
+                }
+            }
+
+            // 3. Fallback to standard parser
+            const fallbackDate = new Date(dateStr);
+            fallbackDate.setHours(0, 0, 0, 0);
+            return !isNaN(fallbackDate.getTime()) && fallbackDate < today;
         } catch (e) {
             console.error('Date parsing error:', e);
             return false;

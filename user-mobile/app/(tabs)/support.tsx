@@ -322,7 +322,10 @@ function ChatModal({ visible, onClose }: { visible: boolean, onClose: () => void
         setIsTyping(true);
 
         try {
-            const response = await api.post('/chat', { message: userMsg });
+            const response = await api.post('/chat', { 
+                message: userMsg,
+                history: messages
+            });
             if (response.data.success) {
                 setMessages(prev => [...prev, { role: 'bot', content: response.data.data }]);
             } else {
@@ -344,10 +347,12 @@ function ChatModal({ visible, onClose }: { visible: boolean, onClose: () => void
         }
     }, [messages, visible]);
 
-    // Clear history when modal is closed
+    // Clear/initialize history when modal is opened/closed
     useEffect(() => {
         if (!visible) {
             setMessages([]);
+        } else {
+            setMessages([{ role: 'bot', content: "Hi! Welcome to Bus Yatra. How may I assist you today?" }]);
         }
     }, [visible]);
 

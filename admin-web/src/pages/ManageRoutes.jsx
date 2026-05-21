@@ -299,9 +299,10 @@ const ManageRoutes = () => {
                             <thead className="bg-slate-50/50 border-b border-slate-100">
                                 <tr>
                                     <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Route / Bus</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Timing & Fare</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Fare & Info</th>
                                     <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Boarding Points</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Schedule</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Departure Time</th>
+                                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Weekly Schedule</th>
                                     <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -320,27 +321,35 @@ const ManageRoutes = () => {
                                         <td className="px-8 py-6">
                                             <div className="flex flex-col text-xs text-slate-600">
                                                 <span className="text-slate-800 font-bold">NPR {route.fare}</span>
-                                                <span className="mt-1 flex items-center text-[10px]"><Clock size={10} className="mr-1 opacity-50" /> {route.departureTime}</span>
+                                                <span className="text-slate-400 mt-1">{route.distance || 0} KM</span>
+                                                <span className={`mt-1 font-bold text-[9px] ${route.roadCondition > 1.5 ? 'text-rose-500' : route.roadCondition > 1.0 ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                                    {route.roadCondition === 1.0 ? 'Excellent' : route.roadCondition <= 1.5 ? 'Construction' : 'Rough Road'}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            <div className="flex flex-wrap gap-1 max-w-[180px]">
+                                                {route.boardingPoints?.length > 0 ? route.boardingPoints.map((p, idx) => (
+                                                    <span key={idx} className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[9px] whitespace-nowrap">{p}</span>
+                                                )) : <span className="text-slate-300 text-[9px] italic">No boarding points</span>}
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6 text-center">
+                                            <div className="flex flex-col items-center justify-center text-xs text-slate-600">
+                                                <span className="flex items-center text-slate-800 font-bold">
+                                                    <Clock size={12} className="mr-1 text-blue-500" />
+                                                    {route.departureTime}
+                                                </span>
+                                                {route.arrivalTime && (
+                                                    <span className="text-[9px] text-slate-400 mt-0.5">
+                                                        Arrival: {route.arrivalTime}
+                                                    </span>
+                                                )}
                                                 {route.trafficDelay > 0 && (
                                                     <span className="mt-1 text-[9px] text-rose-500 flex items-center">
                                                         <AlertCircle size={10} className="mr-1" /> +{route.trafficDelay}m delay
                                                     </span>
                                                 )}
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            <div className="flex flex-col text-[10px]">
-                                                <span className={`font-bold ${route.roadCondition > 1.5 ? 'text-rose-500' : route.roadCondition > 1.0 ? 'text-amber-500' : 'text-emerald-500'}`}>
-                                                    {route.roadCondition === 1.0 ? 'Excellent' : route.roadCondition <= 1.5 ? 'Construction' : 'Rough Road'}
-                                                </span>
-                                                <span className="text-slate-400 mt-1">{route.distance || 0} KM</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            <div className="flex flex-wrap gap-1 max-w-[150px]">
-                                                {route.boardingPoints?.length > 0 ? route.boardingPoints.map((p, idx) => (
-                                                    <span key={idx} className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[9px] whitespace-nowrap">{p}</span>
-                                                )) : <span className="text-slate-300 text-[9px] italic">No boarding points</span>}
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
@@ -365,7 +374,7 @@ const ManageRoutes = () => {
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan="5" className="px-8 py-20 text-center text-slate-400 tracking-tight">No routes found matching your search.</td>
+                                        <td colSpan="6" className="px-8 py-20 text-center text-slate-400 tracking-tight">No routes found matching your search.</td>
                                     </tr>
                                 )}
                             </tbody>

@@ -44,17 +44,21 @@ exports.getChatResponse = async (req, res) => {
             YOUR MISSION:
             Provide actual, helpful travel advice first. NEVER start a response by telling the user to "search in the app". 
 
-            LOCAL KNOWLEDGE (Use this!):
+            GREETINGS & GENERAL CONVERSATION:
+            - If the user greets you (e.g., "hi", "hello", "hey", "namaste"), respond with a friendly greeting like "Hi! Welcome to Bus Yatra. How may I assist you today?" instead of giving unsolicited travel/routing advice. Only provide route details when the user actually asks for a route or travel destination.
+
+            LOCAL KNOWLEDGE (Use this for travel queries!):
             - Kathmandu -> Pokhara: Tourist buses from Sorhakhutte (7 AM), Local from Gongabu.
             - Kirtipur -> Anywhere: Go to Kalanki or Gongabu.
             - Lamachaur -> Mustang: Go to "New Bus Park" (Prithvi Chowk/Gongabu area) in Pokhara to catch Mustang-bound buses.
             - Most buses passing through Kathmandu can be boarded at Kalanki.
 
             GUIDELINES:
-            1. ALWAYS give a specific location or bus park recommendation (e.g., "Go to New Bus Park").
-            2. After giving the specific advice, you can mention: "You can see the exact timings and book seats on the Bus Yatra app."
-            3. If the user asks "check it" or "ok", use the context to provide more details about the previous topic.
-            4. Keep it friendly and snappy (max 2-3 sentences).
+            1. ONLY provide route or travel advice if the user asks for a route, destination, or travel details.
+            2. ALWAYS give a specific location or bus park recommendation (e.g., "Go to New Bus Park").
+            3. After giving the specific advice, you can mention: "You can see the exact timings and book seats on the Bus Yatra app."
+            4. If the user asks "check it" or "ok", use the context to provide more details about the previous topic.
+            5. Keep it friendly and snappy (max 2-3 sentences).
         `;
 
         const apiKey = process.env.OPENROUTER_API_KEY;
@@ -144,9 +148,11 @@ exports.getChatResponse = async (req, res) => {
             console.log("[CHAT-V2] --- All APIs Failed. Booting Local Assistant ---");
             
             let localResponse = "I'm currently in basic mode. How can I help with your bus journey today?";
-            const lowMsg = message.toLowerCase();
+            const lowMsg = message.toLowerCase().trim();
 
-            if (lowMsg.includes('ticket') || lowMsg.includes('book')) {
+            if (lowMsg === 'hi' || lowMsg === 'hello' || lowMsg === 'hey' || lowMsg === 'namaste' || lowMsg === 'greetings') {
+                localResponse = "Hi! Welcome to Bus Yatra. How may I assist you today?";
+            } else if (lowMsg.includes('ticket') || lowMsg.includes('book')) {
                 localResponse = "You can book tickets directly in this app! Just select your destination on the Home screen, find a bus, and follow the payment steps.";
             } else if ((lowMsg.includes('pokhara') || lowMsg.includes('pkr')) && lowMsg.includes('kathmandu')) {
                 localResponse = "For Kathmandu to Pokhara, I recommend Sorhakhutte for Tourist buses (7 AM) or Gongabu for local/deluxe buses. You can book them right here in the app!";
@@ -154,8 +160,7 @@ exports.getChatResponse = async (req, res) => {
                 localResponse = "To cancel a ticket, go to 'My Bookings', select your ticket, and tap 'Cancel'. Refunds are usually processed in 3-5 days.";
             } else if (lowMsg.includes('route') || lowMsg.includes('where')) {
                 localResponse = "We cover most major routes in Nepal including Pokhara, Chitwan, and Dharan. Check the Home screen to see the full list!";
-            }
- else if (lowMsg.includes('payment') || lowMsg.includes('stripe')) {
+            } else if (lowMsg.includes('payment') || lowMsg.includes('stripe')) {
                 localResponse = "We accept Stripe and Cash for ticketing payments. All your transactions are secure.";
             }
 
