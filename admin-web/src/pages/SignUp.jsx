@@ -18,6 +18,29 @@ const SignUp = () => {
     const handleSignUp = async (e) => {
         e.preventDefault();
         setError('');
+
+        // Validate Full Name (At least two words consisting of letters only)
+        const trimmedName = formData.name.trim();
+        const nameParts = trimmedName.split(/\s+/);
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        if (!nameRegex.test(trimmedName) || nameParts.length < 2) {
+            setError('Please enter a valid full name (First and Last name, letters only)');
+            return;
+        }
+
+        // Validate Email Format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setError('Please enter a valid email address');
+            return;
+        }
+
+        // Validate Password (min 6 characters, matching backend validation)
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters long');
+            return;
+        }
+
         setLoading(true);
 
         try {

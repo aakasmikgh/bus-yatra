@@ -46,6 +46,13 @@ export default function LoginScreen() {
             return;
         }
 
+        // Validate Email Format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            Alert.alert('Validation Error', 'Please enter a valid email address');
+            return;
+        }
+
         try {
             setLoading(true);
             const response = await api.post('/auth/login', {

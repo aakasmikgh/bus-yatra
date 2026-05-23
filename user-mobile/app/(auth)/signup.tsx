@@ -48,6 +48,35 @@ export default function SignupScreen() {
             return;
         }
 
+        // Validate Full Name (At least two words consisting of letters only)
+        const trimmedName = fullName.trim();
+        const nameParts = trimmedName.split(/\s+/);
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        if (!nameRegex.test(trimmedName) || nameParts.length < 2) {
+            Alert.alert('Validation Error', 'Please enter a valid full name (First and Last name, letters only)');
+            return;
+        }
+
+        // Validate Email Format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            Alert.alert('Validation Error', 'Please enter a valid email address');
+            return;
+        }
+
+        // Validate Phone Number (10 digits starting with 9, common in Nepal)
+        const phoneRegex = /^9\d{9}$/;
+        if (!phoneRegex.test(phone)) {
+            Alert.alert('Validation Error', 'Please enter a valid 10-digit phone number starting with 9');
+            return;
+        }
+
+        // Validate Password (min 6 characters, matching backend validation)
+        if (password.length < 6) {
+            Alert.alert('Validation Error', 'Password must be at least 6 characters long');
+            return;
+        }
+
         try {
             setLoading(true);
             const response = await api.post('/auth/register', {
