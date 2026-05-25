@@ -181,16 +181,34 @@ export default function BookingSummaryScreen() {
     };
 
     const handlePayNow = async () => {
+        const nameRegex = /^[a-zA-Z\s.'-]{2,50}$/;
+        const phoneRegex = /^9\d{9}$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
         if (!passengerName.trim()) {
             Alert.alert('Missing Information', 'add name');
             return;
         }
+        if (!nameRegex.test(passengerName.trim())) {
+            Alert.alert('Invalid Name', 'Name must contain only letters and spaces (2 to 50 characters)');
+            return;
+        }
+
         if (!phoneNumber.trim()) {
             Alert.alert('Missing Information', 'add phone number');
             return;
         }
+        if (!phoneRegex.test(phoneNumber.trim())) {
+            Alert.alert('Invalid Phone', 'Phone number must be a valid 10-digit number starting with 9');
+            return;
+        }
+
         if (!emailAddress.trim()) {
             Alert.alert('Missing Information', 'add gmail');
+            return;
+        }
+        if (!emailRegex.test(emailAddress.trim())) {
+            Alert.alert('Invalid Email', 'Please enter a valid email address');
             return;
         }
         if (!acceptedTerms) {
